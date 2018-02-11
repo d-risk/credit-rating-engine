@@ -12,17 +12,21 @@ def _readme():
 
 
 setup(
-    name='credit-rating-engine',
+    name='credit-rating-service',
     version='0.1.0',
     packages=find_packages(exclude=['tests', 'tests.*']),
-    url='https://github.com/d-risk/credit-rating-engine',
+    url='https://github.com/d-risk/credit-rating-service',
     license=_license(),
     author='Christopher Zhong',
-    author_email='1946052+chriszhong@users.noreply.github.com',
-    description='D-Risk\'s Credit Rating Engine',
+    author_email='christopher.zhong@d-risk.tech',
+    description='D-Risk\'s Credit Rating Service',
     long_description=_readme(),
-    install_requires=['graphene'],
-    keywords='api graphene credit rating risk',
+    install_requires=[
+        'graphene',
+        'django',
+        'graphene_django'
+    ],
+    keywords='api graphene credit rating risk graphql',
     # test_suite='nose.collector',
     # tests_require=['nose'], install_requires=['graphene']
 )
