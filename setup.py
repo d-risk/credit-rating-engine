@@ -24,7 +24,8 @@ setup(
     install_requires=[
         'graphene',
         'django',
-        'graphene_django'
+        'graphene_django',
+        'django-cors-headers'
     ],
     keywords='api graphene credit rating risk graphql',
     # test_suite='nose.collector',
