@@ -125,4 +125,5 @@ GRAPHENE = {
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:4200',
+    'test.d-risk.tech:443'
 )
