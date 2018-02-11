@@ -24,7 +24,9 @@ SECRET_KEY = 'nd0hq4hc!^t3--$7l13iv_%f9qldz2lv!wnzg^!o022g6-e0#p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'api.test.d-risk.tech'
+]
 
 # Application definition
 
