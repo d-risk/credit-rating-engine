@@ -1,0 +1,5 @@
+*
+!creditratingservice/
+!ratings/
+!requirements.freeze.txt
+!uwsgi.yml
