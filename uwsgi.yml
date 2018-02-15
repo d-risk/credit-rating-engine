@@ -1,0 +1,12 @@
+uwsgi:
+  http: :8000
+  http-auto-chunked: true
+  http-keepalive: true
+  master: true
+  plugin-list: true
+  plugins: http
+  plugins: python3
+  processes: 2
+  threads: 2
+  venv: venv-app
+  wsgi-file: creditratingservice/wsgi.py
