@@ -1,5 +1,5 @@
 uwsgi:
-  http: :8000
+  http: :80
   http-auto-chunked: true
   http-keepalive: true
   master: true
