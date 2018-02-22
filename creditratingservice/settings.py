@@ -25,6 +25,7 @@ SECRET_KEY = 'nd0hq4hc!^t3--$7l13iv_%f9qldz2lv!wnzg^!o022g6-e0#p'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
     '.d-risk.tech'
 ]
 
@@ -126,6 +127,6 @@ GRAPHENE = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:4200',
-    'test.d-risk.tech:443'
+    'localhost',
+    'test.d-risk.tech'
 )
