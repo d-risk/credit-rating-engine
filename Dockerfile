@@ -13,12 +13,12 @@ WORKDIR /app
 COPY requirements.freeze.txt /app
 
 RUN python3 -m venv venv-app \
-	    && source venv-app/bin/activate \
-	    && pip --version \
-	    && pip install --no-cache-dir --requirement requirements.freeze.txt
+    && source venv-app/bin/activate \
+    && pip --version \
+    && pip install --no-cache-dir --requirement requirements.freeze.txt
 
 COPY . /app
 
 CMD ["uwsgi", "--yaml", "uwsgi.yml"]
 
-EXPOSE 8000
+EXPOSE 80
