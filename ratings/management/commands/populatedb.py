@@ -6,7 +6,7 @@ from typing import Tuple
 from django.core.management.base import BaseCommand
 
 from ratings.models import Company, CountryRisk, CreditRating, Profitability, DebtCoverage, Leverage, Liquidity, Size, \
-    IndustryRisk, Competitiveness, Rating
+    IndustryRisk, Competitiveness, Report
 
 AMOUNT = 'amount'
 
@@ -206,8 +206,8 @@ class Command(BaseCommand):
             country_risk: CountryRisk,
             industry_risk: IndustryRisk,
             competitiveness: Competitiveness,
-    ) -> Rating:
-        rating = Rating(
+    ) -> Report:
+        rating = Report(
             company_id=company.id,
             credit_rating=credit_rating,
             profitability=profitability,

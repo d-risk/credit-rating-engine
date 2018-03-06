@@ -53,7 +53,7 @@ class Competitiveness(RiskDriver):
     pass
 
 
-class Rating(models.Model):
+class Report(models.Model):
     company_id = models.UUIDField()
     credit_rating = models.ForeignKey(CreditRating, on_delete=models.PROTECT)
     profitability = models.ForeignKey(Profitability, on_delete=models.PROTECT)

@@ -1,71 +1,74 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from ratings.models import Company, Rating, CreditRating, Profitability, DebtCoverage, Leverage, \
-    Liquidity, Size, CountryRisk, IndustryRisk, Competitiveness
+import ratings.models
 
 
-class CreditRatingType(DjangoObjectType):
+class CreditRating(DjangoObjectType):
     class Meta:
-        model = CreditRating
+        model = ratings.models.CreditRating
 
 
-class ProfitabilityType(DjangoObjectType):
+class Profitability(DjangoObjectType):
     class Meta:
-        model = Profitability
+        model = ratings.models.Profitability
 
 
-class DebtCoverageType(DjangoObjectType):
+class DebtCoverage(DjangoObjectType):
     class Meta:
-        model = DebtCoverage
+        model = ratings.models.DebtCoverage
 
 
-class LeverageType(DjangoObjectType):
+class Leverage(DjangoObjectType):
     class Meta:
-        model = Leverage
+        model = ratings.models.Leverage
 
 
-class LiquidityType(DjangoObjectType):
+class Liquidity(DjangoObjectType):
     class Meta:
-        model = Liquidity
+        model = ratings.models.Liquidity
 
 
-class SizeType(DjangoObjectType):
+class Size(DjangoObjectType):
     class Meta:
-        model = Size
+        model = ratings.models.Size
 
 
-class CountryRiskType(DjangoObjectType):
+class CountryRisk(DjangoObjectType):
     class Meta:
-        model = CountryRisk
+        model = ratings.models.CountryRisk
 
 
-class IndustryRiskType(DjangoObjectType):
+class IndustryRisk(DjangoObjectType):
     class Meta:
-        model = IndustryRisk
+        model = ratings.models.IndustryRisk
 
 
-class CompetitivenessType(DjangoObjectType):
+class Competitiveness(DjangoObjectType):
     class Meta:
-        model = Competitiveness
+        model = ratings.models.Competitiveness
 
 
-class RatingType(DjangoObjectType):
+class Report(DjangoObjectType):
     class Meta:
-        model = Rating
+        model = ratings.models.Report
 
 
-class CompanyType(DjangoObjectType):
+class Company(DjangoObjectType):
     class Meta:
-        model = Company
+        model = ratings.models.Company
 
 
 class Query(graphene.ObjectType):
-    companies = graphene.List(CompanyType, company_name=graphene.String())
-    ratings = graphene.List(RatingType, company_id=graphene.UUID())
+    company = graphene.Field(Company, id=graphene.UUID())
+    companies = graphene.List(Company, company_name=graphene.String())
+    reports = graphene.List(Report, company_id=graphene.UUID())
+
+    def resolve_company(self, info, id):
+        return ratings.models.Company.objects.get(id=id)
 
     def resolve_companies(self, info, company_name):
-        return Company.objects.filter(name__icontains=company_name)
+        return ratings.models.Company.objects.filter(name__icontains=company_name)
 
-    def resolve_ratings(self, info, company_id):
-        return Rating.objects.filter(company_id=company_id).order_by('-credit_rating__date')
+    def resolve_reports(self, info, company_id):
+        return ratings.models.Report.objects.filter(company_id=company_id).order_by('-credit_rating__date')
