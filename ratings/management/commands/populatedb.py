@@ -1,12 +1,11 @@
 import urllib.request
 from datetime import datetime, timezone
-from random import choice
-from typing import Tuple
+from random import choice, uniform, random, randrange
+from typing import Tuple, List
 
 from django.core.management.base import BaseCommand
 
-from ratings.models import Company, CountryRisk, CreditRating, Profitability, DebtCoverage, Leverage, Liquidity, Size, \
-    IndustryRisk, Competitiveness, Report
+from ratings.models import Company, CreditRating, Report, RiskDriver, Unit
 
 AMOUNT = 'amount'
 
@@ -23,108 +22,30 @@ def create_credit_rating(
     return credit_rating
 
 
-def create_profitability(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> Profitability:
-    profitability = Profitability(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
+def create_risk_driver(
+        name: str, unit: Unit = Unit.UNKNOWN,
+        latest: float = None, maximum: float = None, minimum: float = None, average: float = None,
+) -> RiskDriver:
+    risk_driver = RiskDriver(
+        name=name,
+        unit=unit,
+        latest=latest if latest else random_value(unit),
+        maximum=maximum if maximum else random_value(unit),
+        minimum=minimum if minimum else random_value(unit),
+        average=average if average else random_value(unit),
     )
-    profitability.save()
-    return profitability
+    return risk_driver
 
 
-def create_debt_coverage(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> DebtCoverage:
-    debt_coverage = DebtCoverage(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    debt_coverage.save()
-    return debt_coverage
-
-
-def create_leverage(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> Leverage:
-    leverage = Leverage(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    leverage.save()
-    return leverage
-
-
-def create_liquidity(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> Liquidity:
-    liquidity = Liquidity(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    liquidity.save()
-    return liquidity
-
-
-def create_size(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> Size:
-    size = Size(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    size.save()
-    return size
-
-
-def create_country_risk(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> CountryRisk:
-    country_risk = CountryRisk(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    country_risk.save()
-    return country_risk
-
-
-def create_industry_risk(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> IndustryRisk:
-    industry_risk = IndustryRisk(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    industry_risk.save()
-    return industry_risk
-
-
-def create_competitiveness(
-        latest: float = 1, maximum: float = 1, minimum: float = 1, average: float = 1,
-) -> Competitiveness:
-    competitiveness = Competitiveness(
-        latest=latest,
-        maximum=maximum,
-        minimum=minimum,
-        average=average,
-    )
-    competitiveness.save()
-    return competitiveness
+def random_value(unit: Unit) -> float:
+    value = 1
+    if unit is Unit.PERCENTAGE:
+        value = random()
+    elif unit is Unit.MULTIPLICATIVE:
+        value = uniform(0, 1000)
+    elif unit is Unit.UNKNOWN:
+        value = randrange(999_999_999_999)
+    return value
 
 
 class Command(BaseCommand):
@@ -146,14 +67,27 @@ class Command(BaseCommand):
             self.create_rating(
                 company=company,
                 credit_rating=create_credit_rating(text='A1'),
-                profitability=create_profitability(latest=5.7, maximum=7.7, minimum=5.7, average=6.7),
-                debt_coverage=create_debt_coverage(latest=76.2, maximum=81.2, minimum=70.4, average=75.8),
-                leverage=create_leverage(latest=40.5, maximum=41.5, minimum=37.7, average=39.6),
-                liquidity=create_liquidity(latest=1.11, maximum=1.58, minimum=1.06, average=1.32),
-                size=create_size(latest=48_294_200, maximum=48_294_200, minimum=39_320_000, average=43_807_100),
-                country_risk=create_country_risk(latest=1, maximum=1, minimum=1, average=1),
-                industry_risk=create_industry_risk(latest=1, maximum=1, minimum=1, average=1),
-                competitiveness=create_competitiveness(latest=1, maximum=1, minimum=1, average=1),
+                risk_drivers=[
+                    create_risk_driver('Profitability', Unit.PERCENTAGE, latest=5.7, maximum=7.7,
+                                       minimum=5.7,
+                                       average=6.7),
+                    create_risk_driver('Debt Coverage', Unit.MULTIPLICATIVE, latest=76.2, maximum=81.2,
+                                       minimum=70.4,
+                                       average=75.8),
+                    create_risk_driver('Leverage', Unit.PERCENTAGE, latest=40.5, maximum=41.5, minimum=37.7,
+                                       average=39.6),
+                    create_risk_driver('Liquidity', Unit.PERCENTAGE, latest=1.11, maximum=1.58, minimum=1.06,
+                                       average=1.32),
+                    create_risk_driver('Size', Unit.UNKNOWN, latest=48_294_200, maximum=48_294_200,
+                                       minimum=39_320_000,
+                                       average=43_807_100),
+                    create_risk_driver('Country Risk', Unit.UNKNOWN, latest=1, maximum=1, minimum=1,
+                                       average=1),
+                    create_risk_driver('Industry Risk', Unit.UNKNOWN, latest=1, maximum=1, minimum=1,
+                                       average=1),
+                    create_risk_driver('Competitiveness', Unit.UNKNOWN, latest=1, maximum=1, minimum=1,
+                                       average=1),
+                ],
             )
 
     def create_companies(self, amount: int, from_year: int, to_year: int):
@@ -165,20 +99,23 @@ class Command(BaseCommand):
                 company, created = self.create_company(name=f'{choice(nouns)} {choice(nouns)} {choice(nouns)}')
                 if created:
                     companies.append(company)
+                    ratios = [
+                        ('Profitability', Unit.PERCENTAGE),
+                        ('Debt Coverage', Unit.MULTIPLICATIVE),
+                        ('Leverage', Unit.PERCENTAGE),
+                        ('Liquidity', Unit.PERCENTAGE),
+                        ('Size', Unit.UNKNOWN),
+                        ('Country Risk', Unit.UNKNOWN),
+                        ('Industry Risk', Unit.UNKNOWN),
+                        ('Competitiveness', Unit.UNKNOWN),
+                    ]
                     for year in range(from_year, to_year + 1):
                         self.create_rating(
                             company=company,
                             credit_rating=create_credit_rating(
                                 date=datetime(year=year, month=1, day=1, tzinfo=timezone.utc),
                             ),
-                            profitability=create_profitability(),
-                            debt_coverage=create_debt_coverage(),
-                            leverage=create_leverage(),
-                            liquidity=create_liquidity(),
-                            size=create_size(),
-                            country_risk=create_country_risk(),
-                            industry_risk=create_industry_risk(),
-                            competitiveness=create_competitiveness(),
+                            risk_drivers=[create_risk_driver(name, unit) for name, unit in ratios],
                         )
         self.stdout.write(f'{len(companies)} companies created, {amount - len(companies)} duplicates')
 
@@ -198,27 +135,13 @@ class Command(BaseCommand):
             self,
             company: Company,
             credit_rating: CreditRating,
-            profitability: Profitability,
-            debt_coverage: DebtCoverage,
-            leverage: Leverage,
-            liquidity: Liquidity,
-            size: Size,
-            country_risk: CountryRisk,
-            industry_risk: IndustryRisk,
-            competitiveness: Competitiveness,
+            risk_drivers: List[RiskDriver],
     ) -> Report:
-        rating = Report(
+        report = Report(
             company_id=company.id,
             credit_rating=credit_rating,
-            profitability=profitability,
-            debt_coverage=debt_coverage,
-            leverage=leverage,
-            liquidity=liquidity,
-            size=size,
-            country_risk=country_risk,
-            industry_risk=industry_risk,
-            competitiveness=competitiveness,
         )
-        rating.save()
-        self.stdout.write(f'        + Rating \'{rating.id}\' ({rating.credit_rating.date}) created')
-        return rating
+        report.save()
+        report.risk_drivers.set(risk_drivers, bulk=False)
+        self.stdout.write(f'        + Rating \'{report.id}\' ({report.credit_rating.date}) created')
+        return report

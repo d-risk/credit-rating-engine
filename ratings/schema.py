@@ -9,49 +9,14 @@ class CreditRating(DjangoObjectType):
         model = ratings.models.CreditRating
 
 
-class Profitability(DjangoObjectType):
-    class Meta:
-        model = ratings.models.Profitability
-
-
-class DebtCoverage(DjangoObjectType):
-    class Meta:
-        model = ratings.models.DebtCoverage
-
-
-class Leverage(DjangoObjectType):
-    class Meta:
-        model = ratings.models.Leverage
-
-
-class Liquidity(DjangoObjectType):
-    class Meta:
-        model = ratings.models.Liquidity
-
-
-class Size(DjangoObjectType):
-    class Meta:
-        model = ratings.models.Size
-
-
-class CountryRisk(DjangoObjectType):
-    class Meta:
-        model = ratings.models.CountryRisk
-
-
-class IndustryRisk(DjangoObjectType):
-    class Meta:
-        model = ratings.models.IndustryRisk
-
-
-class Competitiveness(DjangoObjectType):
-    class Meta:
-        model = ratings.models.Competitiveness
-
-
 class Report(DjangoObjectType):
     class Meta:
         model = ratings.models.Report
+
+
+class RiskDriver(DjangoObjectType):
+    class Meta:
+        model = ratings.models.RiskDriver
 
 
 class Company(DjangoObjectType):
