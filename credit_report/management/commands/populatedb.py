@@ -5,7 +5,7 @@ from typing import Tuple, List
 
 from django.core.management.base import BaseCommand
 
-from ratings.models import Company, CreditRating, Report, RiskDriver, Unit
+from credit_report.models import Company, CreditRating, Report, RiskDriver, Unit
 
 AMOUNT = 'amount'
 
