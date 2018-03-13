@@ -5,7 +5,8 @@ from typing import Tuple, List
 
 from django.core.management.base import BaseCommand
 
-from credit_report.models import Company, CreditReport, RiskDriver, Unit, FinancialReport, Financial
+from credit_report.models import Company, CreditReport, RiskDriver, Unit, FinancialsReport, FinancialsNumber, \
+    RiskDriverNumber
 
 AMOUNT = 'amount'
 RATINGS = ['A', 'B', 'C']
@@ -34,6 +35,13 @@ RISK_DRIVERS: List[Tuple[str, Unit]] = [
     ('Industry Risk', Unit.PERCENTAGE),
     ('Competitiveness', Unit.PERCENTAGE),
 ]
+RISK_DRIVER_NUMBERS: List[str] = [
+    'Latest',
+    'Maximum',
+    'Minimum',
+    'Average',
+    'Industry Average',
+]
 
 
 def create_company(
@@ -55,10 +63,10 @@ def create_company(
 
 def create_credit_report(
         company: Company,
-        credit_report_score: int = randint(1, 1000),
-        credit_report_rating: str = choice(RATINGS),
-        credit_report_date: datetime = datetime.now(timezone.utc),
-        financial_reports: List[FinancialReport] = None,
+        credit_report_score: int,
+        credit_report_rating: str,
+        credit_report_date: datetime,
+        financials_reports: List[FinancialsReport] = None,
 ) -> CreditReport:
     credit_report = CreditReport.objects.create(
         company_id=company.id,
@@ -66,54 +74,36 @@ def create_credit_report(
         credit_report_rating=credit_report_rating,
         credit_report_date=credit_report_date,
     )
-    credit_report.financial_reports.set(financial_reports)
+    if financials_reports:
+        credit_report.financials_reports.set(financials_reports)
     print(f'        + Credit Report \'{credit_report.id}\' ({credit_report.credit_report_date}) created', )
     return credit_report
 
 
-def create_financial_report(
+def create_financials_report(
         company: Company,
-        financial_report_date: datetime,
-        financials: List[Financial] = None,
-        risk_drivers: List[RiskDriver] = None,
-) -> FinancialReport:
-    financial_report = FinancialReport.objects.create(
+        financials_report_date: datetime,
+) -> FinancialsReport:
+    financials_report = FinancialsReport.objects.create(
         company_id=company.id,
-        financial_report_date=financial_report_date,
+        financials_report_date=financials_report_date,
     )
-    if financials:
-        financial_report.financials.set(financials, bulk=False)
-    else:
-        financial_report.financials.set(random_financials(), bulk=False)
-    if risk_drivers:
-        financial_report.risk_drivers.set(risk_drivers, bulk=False)
-    else:
-        financial_report.risk_drivers.set(random_risk_drivers(), bulk=False)
-    print(f'        + Financial Report \'{financial_report.id}\' ({financial_report.financial_report_date}) created', )
-    return financial_report
+    print(
+        f'        + Financial Report \'{financials_report.id}\' ({financials_report.financials_report_date}) created', )
+    return financials_report
 
 
-def create_financial(name: str, unit: Unit = Unit.CURRENCY, value: float = None, ) -> Financial:
-    return Financial(
-        name=name,
-        unit=unit,
-        value=value if value else random_value(unit),
-    )
+def create_financials_number(financials_report: FinancialsReport, name: str, unit: Unit,
+                             value: float, ) -> FinancialsNumber:
+    return financials_report.financials_numbers.create(name=name, unit=unit, value=value, )
 
 
-def create_risk_driver(name: str, unit: Unit = Unit.UNKNOWN,
-                       latest: float = None, maximum: float = None, minimum: float = None, average: float = None,
-                       industry_average: float = None,
-                       ) -> RiskDriver:
-    return RiskDriver(
-        name=name,
-        unit=unit,
-        latest=latest if latest else random_value(unit),
-        maximum=maximum if maximum else random_value(unit),
-        minimum=minimum if minimum else random_value(unit),
-        average=average if average else random_value(unit),
-        industry_average=industry_average if industry_average else random_value(unit),
-    )
+def create_risk_driver(financials_report: FinancialsReport, category: str, unit: Unit, ) -> RiskDriver:
+    return financials_report.risk_drivers.create(category=category, unit=unit, )
+
+
+def create_risk_driver_number(risk_driver: RiskDriver, name: str, value: float, ) -> RiskDriverNumber:
+    return risk_driver.numbers.create(name=name, value=value, )
 
 
 def random_companies(number_of_companies: int, from_year: int, to_year: int):
@@ -127,31 +117,41 @@ def random_companies(number_of_companies: int, from_year: int, to_year: int):
             )
             if created:
                 companies.append(company)
-                random_credit_reports(company=company, from_year=from_year, to_year=to_year)
+                random_credit_reports(company=company, from_year=from_year, to_year=to_year, )
     print(f'{len(companies)} companies created, {number_of_companies - len(companies)} duplicates')
 
 
 def random_credit_reports(company: Company, from_year: int, to_year: int):
-    financial_reports: List[FinancialReport] = []
+    financials_reports: List[FinancialsReport] = []
     for year in range(from_year, to_year + 1):
         report_date = datetime(year=year, month=1, day=1, tzinfo=timezone.utc)
-        financial_reports.append(create_financial_report(
-            company=company,
-            financial_report_date=report_date,
-        ))
-        create_credit_report(
-            company=company,
-            credit_report_date=report_date,
-            financial_reports=financial_reports,
-        )
+
+        financials_report = create_financials_report(company=company, financials_report_date=report_date, )
+
+        random_financials_numbers(financials_report=financials_report)
+        random_risk_drivers(financials_report=financials_report)
+
+        financials_reports.append(financials_report)
+
+        create_credit_report(company=company, credit_report_score=randint(1, 1000),
+                             credit_report_rating=choice(RATINGS), credit_report_date=report_date,
+                             financials_reports=financials_reports, )
 
 
-def random_financials() -> List[Financial]:
-    return [create_financial(name=name, unit=unit) for name, unit in FINANCIALS]
+def random_financials_numbers(financials_report: FinancialsReport):
+    for name, unit in FINANCIALS:
+        create_financials_number(financials_report=financials_report, name=name, unit=unit, value=random_value(unit))
 
 
-def random_risk_drivers() -> List[RiskDriver]:
-    return [create_risk_driver(name=name, unit=unit) for name, unit in RISK_DRIVERS]
+def random_risk_drivers(financials_report: FinancialsReport):
+    for category, unit in RISK_DRIVERS:
+        risk_driver = create_risk_driver(financials_report=financials_report, category=category, unit=unit)
+        random_risk_driver_numbers(risk_driver=risk_driver, unit=unit)
+
+
+def random_risk_driver_numbers(risk_driver: RiskDriver, unit: Unit):
+    for name in RISK_DRIVER_NUMBERS:
+        create_risk_driver_number(risk_driver=risk_driver, name=name, value=random_value(unit))
 
 
 def random_value(unit: Unit) -> float:
@@ -167,79 +167,143 @@ def random_value(unit: Unit) -> float:
     return value
 
 
+def create_singtel_company():
+    company, created = create_company(
+        name='Singapore Telecommunications Limited',
+        description='Singapore Telecommunications Limited provides integrated infocomm technology solutions to enterprise customers primarily in Singapore, Australia, the United States of America, and Europe. The company operates through Group Consumer, Group Enterprise, and Group Digital Life segments. The Group Consumer segment is involved in carriage business, including mobile, pay TV, fixed broadband, and voice, as well as equipment sales. The Group Enterprise segment offers mobile, equipment sales, fixed voice and data, managed services, cloud computing, cyber security, and IT and professional consulting services. The Group Digital Life segment engages in digital marketing, regional video, and advanced analytics and intelligence businesses. The company also operates a venture capital fund that focuses its investments on technologies and solutions. Singapore Telecommunications Limited is headquartered in Singapore.',
+        industry='Telecommunications',
+    )
+    if created:
+        # singtel has 4 financial reports
+        financials_reports = [
+            financials_report_1(company),
+            financials_report_2(company),
+            financials_report_3(company),
+            financials_report_4(company),
+        ]
+
+        # singtel has one credit report
+        create_credit_report(
+            company=company,
+            credit_report_score=randint(1, 1000),
+            credit_report_rating='A1',
+            credit_report_date=datetime.now(timezone.utc),
+            financials_reports=financials_reports,
+        )
+
+
+def financials_report_1(company):
+    # financial report 1
+    financials_report = create_financials_report(
+        company=company,
+        financials_report_date=datetime(year=2014, month=3, day=31, tzinfo=timezone.utc),
+    )
+    random_financials_numbers(financials_report=financials_report)
+    random_risk_drivers(financials_report=financials_report)
+    return financials_report
+
+
+def financials_report_2(company):
+    # financial report 2
+    financials_report = create_financials_report(
+        company=company,
+        financials_report_date=datetime(year=2015, month=3, day=31, tzinfo=timezone.utc),
+    )
+    random_financials_numbers(financials_report=financials_report)
+    random_risk_drivers(financials_report=financials_report)
+    return financials_report
+
+
+def financials_report_3(company):
+    # financial report 3
+    financials_report = create_financials_report(
+        company=company,
+        financials_report_date=datetime(year=2016, month=3, day=31, tzinfo=timezone.utc),
+    )
+    random_financials_numbers(financials_report=financials_report)
+    random_risk_drivers(financials_report=financials_report)
+
+    return financials_report
+
+
+def financials_report_4(company):
+    # financial report 4
+    financials_report = create_financials_report(
+        company=company,
+        financials_report_date=datetime(year=2017, month=3, day=31, tzinfo=timezone.utc),
+    )
+    # financials_numbers=[],
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Profitability',
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=5.7)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=7.7)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=5.7)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=6.7)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Debt Coverage',
+                                     unit=Unit.MULTIPLICATIVE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=76.2)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=81.2)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=70.4)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=75.8)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Leverage',
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=40.5)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=41.5)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=37.7)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=39.6)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Liquidity',
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1.11)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1.58)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1.06)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1.32)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Size', unit=Unit.CURRENCY, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=48_294_200)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=48_294_200)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=39_320_000)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=43_807_100)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Country Risk',
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Industry Risk',
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    risk_driver = create_risk_driver(financials_report=financials_report, category='Competitiveness',
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1)
+    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+
+    return financials_report
+
+
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(AMOUNT, type=int)
 
     def handle(self, *args, **options):
-        self.create_singtel_company()
+        create_singtel_company()
         random_companies(options[AMOUNT], 2015, 2018)
-
-    @staticmethod
-    def create_singtel_company():
-        company, created = create_company(
-            name='Singapore Telecommunications Limited',
-            description='Singapore Telecommunications Limited provides integrated infocomm technology solutions to enterprise customers primarily in Singapore, Australia, the United States of America, and Europe. The company operates through Group Consumer, Group Enterprise, and Group Digital Life segments. The Group Consumer segment is involved in carriage business, including mobile, pay TV, fixed broadband, and voice, as well as equipment sales. The Group Enterprise segment offers mobile, equipment sales, fixed voice and data, managed services, cloud computing, cyber security, and IT and professional consulting services. The Group Digital Life segment engages in digital marketing, regional video, and advanced analytics and intelligence businesses. The company also operates a venture capital fund that focuses its investments on technologies and solutions. Singapore Telecommunications Limited is headquartered in Singapore.',
-            industry='Telecommunications',
-        )
-        if created:
-            # singtel has one credit report
-            create_credit_report(
-                company=company,
-                credit_report_rating='A1',
-                #  singtel has 4 financial reports
-                financial_reports=[
-                    create_financial_report(
-                        company=company,
-                        financial_report_date=datetime(year=2014, month=3, day=31, tzinfo=timezone.utc),
-                        financials=[
-                        ],
-                        risk_drivers=[
-                        ],
-                    ),
-                    create_financial_report(
-                        company=company,
-                        financial_report_date=datetime(year=2015, month=3, day=31, tzinfo=timezone.utc),
-                        financials=[
-                        ],
-                        risk_drivers=[
-                        ],
-                    ),
-                    create_financial_report(
-                        company=company,
-                        financial_report_date=datetime(year=2016, month=3, day=31, tzinfo=timezone.utc),
-                        financials=[
-                        ],
-                        risk_drivers=[
-                        ],
-                    ),
-                    create_financial_report(
-                        company=company,
-                        financial_report_date=datetime(year=2017, month=3, day=31, tzinfo=timezone.utc),
-                        financials=[
-                        ],
-                        risk_drivers=[
-                            create_risk_driver('Profitability', Unit.PERCENTAGE, latest=5.7, maximum=7.7,
-                                               minimum=5.7,
-                                               average=6.7),
-                            create_risk_driver('Debt Coverage', Unit.MULTIPLICATIVE, latest=76.2, maximum=81.2,
-                                               minimum=70.4,
-                                               average=75.8),
-                            create_risk_driver('Leverage', Unit.PERCENTAGE, latest=40.5, maximum=41.5, minimum=37.7,
-                                               average=39.6),
-                            create_risk_driver('Liquidity', Unit.PERCENTAGE, latest=1.11, maximum=1.58, minimum=1.06,
-                                               average=1.32),
-                            create_risk_driver('Size', Unit.CURRENCY, latest=48_294_200, maximum=48_294_200,
-                                               minimum=39_320_000,
-                                               average=43_807_100),
-                            create_risk_driver('Country Risk', Unit.PERCENTAGE, latest=1, maximum=1, minimum=1,
-                                               average=1),
-                            create_risk_driver('Industry Risk', Unit.PERCENTAGE, latest=1, maximum=1, minimum=1,
-                                               average=1),
-                            create_risk_driver('Competitiveness', Unit.PERCENTAGE, latest=1, maximum=1, minimum=1,
-                                               average=1),
-                        ],
-                    ),
-                ],
-            )

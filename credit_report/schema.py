@@ -9,22 +9,27 @@ class CreditReport(DjangoObjectType):
         model = credit_report.models.CreditReport
 
 
-class FinancialReport(DjangoObjectType):
+class FinancialsReport(DjangoObjectType):
     class Meta:
-        model = credit_report.models.FinancialReport
+        model = credit_report.models.FinancialsReport
 
 
 Unit = graphene.Enum.from_enum(enum=credit_report.models.Unit, )
 
 
-class Financial(DjangoObjectType):
+class FinancialsNumber(DjangoObjectType):
     class Meta:
-        model = credit_report.models.Financial
+        model = credit_report.models.FinancialsNumber
 
 
 class RiskDriver(DjangoObjectType):
     class Meta:
         model = credit_report.models.RiskDriver
+
+
+class RiskDriverNumber(DjangoObjectType):
+    class Meta:
+        model = credit_report.models.RiskDriverNumber
 
 
 class Company(DjangoObjectType):
@@ -44,4 +49,4 @@ class Query(graphene.ObjectType):
         return credit_report.models.Company.objects.filter(name__icontains=company_name)
 
     def resolve_credit_reports(self, info, company_id):
-        return credit_report.models.CreditReport.objects.filter(company_id=company_id).order_by('-credit_report_date')
+        return credit_report.models.CreditReport.objects.filter(company_id=company_id)
