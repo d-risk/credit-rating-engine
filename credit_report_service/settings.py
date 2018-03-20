@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'creditratingservice.urls'
+ROOT_URLCONF = 'credit_report_service.urls'
 
 TEMPLATES = [
     {
@@ -73,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'creditratingservice.wsgi.application'
+WSGI_APPLICATION = 'credit_report_service.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -123,7 +123,7 @@ STATIC_URL = '/static/'
 
 # Graphene
 GRAPHENE = {
-    'SCHEMA': 'creditratingservice.schema.schema',
+    'SCHEMA': 'credit_report_service.schema.schema',
 }
 
 CORS_ORIGIN_WHITELIST = (
