@@ -9,4 +9,4 @@ uwsgi:
   processes: 2
   threads: 2
   venv: venv-app
-  wsgi-file: creditratingservice/wsgi.py
+  wsgi-file: credit_report_service/wsgi.py
