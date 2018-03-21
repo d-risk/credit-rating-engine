@@ -14,12 +14,9 @@ class FinancialsReport(DjangoObjectType):
         model = credit_report.models.FinancialsReport
 
 
-Unit = graphene.Enum.from_enum(enum=credit_report.models.Unit, )
-
-
-class FinancialsNumber(DjangoObjectType):
+class Financials(DjangoObjectType):
     class Meta:
-        model = credit_report.models.FinancialsNumber
+        model = credit_report.models.Financials
 
 
 class RiskDriver(DjangoObjectType):
@@ -27,9 +24,9 @@ class RiskDriver(DjangoObjectType):
         model = credit_report.models.RiskDriver
 
 
-class RiskDriverNumber(DjangoObjectType):
+class RiskDriverData(DjangoObjectType):
     class Meta:
-        model = credit_report.models.RiskDriverNumber
+        model = credit_report.models.RiskDriverData
 
 
 class Company(DjangoObjectType):

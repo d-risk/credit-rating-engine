@@ -5,37 +5,61 @@ from typing import Tuple, List
 
 from django.core.management.base import BaseCommand
 
-from credit_report.models import Company, CreditReport, RiskDriver, Unit, FinancialsReport, FinancialsNumber, \
-    RiskDriverNumber
+from credit_report.models import Company, CreditReport, RiskDriver, Unit, FinancialsReport, Financials, \
+    RiskDriverData
+
+# financials names
+REVENUE = 'Revenue'
+EBIT = 'EBIT'
+EBITDA = 'EBITDA'
+INTEREST_EXPENSE = 'Interest Expense'
+PROFIT_BEFORE_TAX = 'Profit Before Tax'
+PROFIT_AFTER_TAX = 'Profit After Tax'
+CASH_EQUIVALENTS = 'Cash and Cash Equivalents'
+TOTAL_ASSETS = 'Total Assets'
+TOTAL_LIABILITIES = 'Total Liabilities'
+TOTAL_DEBT = 'Total Debt'
+TOTAL_EQUITY = 'Total Equity'
+CURRENT_ASSETS = 'Current Assets'
+CURRENT_LIABILITIES = 'Current Liabilities'
+# risk drivers
+PROFITABILITY = 'Profitability'
+DEBT_COVERAGE = 'Debt Coverage'
+LEVERAGE = 'Leverage'
+LIQUIDITY = 'Liquidity'
+SIZE = 'Size'
+COUNTRY_RISK = 'Country Risk'
+INDUSTRY_RISK = 'Industry Risk'
+COMPETITIVENESS = 'Competitiveness'
 
 AMOUNT = 'amount'
 RATINGS = ['A', 'B', 'C']
 FINANCIALS: List[Tuple[str, Unit]] = [
-    ('Revenue', Unit.CURRENCY),
-    ('EBIT', Unit.CURRENCY),
-    ('EBITDA', Unit.CURRENCY),
-    ('Interest Expense', Unit.CURRENCY),
-    ('Profit Before Tax', Unit.CURRENCY),
-    ('Profit After Tax', Unit.CURRENCY),
-    ('Cash and Cash Equivalents', Unit.CURRENCY),
-    ('Total Assets', Unit.CURRENCY),
-    ('Total Liabilities', Unit.CURRENCY),
-    ('Total Debt', Unit.CURRENCY),
-    ('Total Equity', Unit.CURRENCY),
-    ('Current Assets', Unit.CURRENCY),
-    ('Current Liabilities', Unit.CURRENCY),
+    (REVENUE, Unit.CURRENCY),
+    (EBIT, Unit.CURRENCY),
+    (EBITDA, Unit.CURRENCY),
+    (INTEREST_EXPENSE, Unit.CURRENCY),
+    (PROFIT_BEFORE_TAX, Unit.CURRENCY),
+    (PROFIT_AFTER_TAX, Unit.CURRENCY),
+    (CASH_EQUIVALENTS, Unit.CURRENCY),
+    (TOTAL_ASSETS, Unit.CURRENCY),
+    (TOTAL_LIABILITIES, Unit.CURRENCY),
+    (TOTAL_DEBT, Unit.CURRENCY),
+    (TOTAL_EQUITY, Unit.CURRENCY),
+    (CURRENT_ASSETS, Unit.CURRENCY),
+    (CURRENT_LIABILITIES, Unit.CURRENCY),
 ]
 RISK_DRIVERS: List[Tuple[str, Unit]] = [
-    ('Profitability', Unit.PERCENTAGE),
-    ('Debt Coverage', Unit.MULTIPLICATIVE),
-    ('Leverage', Unit.PERCENTAGE),
-    ('Liquidity', Unit.PERCENTAGE),
-    ('Size', Unit.CURRENCY),
-    ('Country Risk', Unit.PERCENTAGE),
-    ('Industry Risk', Unit.PERCENTAGE),
-    ('Competitiveness', Unit.PERCENTAGE),
+    (PROFITABILITY, Unit.PERCENTAGE),
+    (DEBT_COVERAGE, Unit.MULTIPLICATIVE),
+    (LEVERAGE, Unit.PERCENTAGE),
+    (LIQUIDITY, Unit.PERCENTAGE),
+    (SIZE, Unit.CURRENCY),
+    (COUNTRY_RISK, Unit.PERCENTAGE),
+    (INDUSTRY_RISK, Unit.PERCENTAGE),
+    (COMPETITIVENESS, Unit.PERCENTAGE),
 ]
-RISK_DRIVER_NUMBERS: List[str] = [
+RISK_DRIVER_DATA: List[str] = [
     'Latest',
     'Maximum',
     'Minimum',
@@ -93,17 +117,17 @@ def create_financials_report(
     return financials_report
 
 
-def create_financials_number(financials_report: FinancialsReport, name: str, unit: Unit,
-                             value: float, ) -> FinancialsNumber:
-    return financials_report.financials_numbers.create(name=name, unit=unit, value=value, )
+def create_financials(financials_report: FinancialsReport, name: str, unit: Unit,
+                      value: float, ) -> Financials:
+    return financials_report.financials.create(name=name, unit=unit.name, value=value, )
 
 
 def create_risk_driver(financials_report: FinancialsReport, category: str, unit: Unit, ) -> RiskDriver:
-    return financials_report.risk_drivers.create(category=category, unit=unit, )
+    return financials_report.risk_drivers.create(category=category, unit=unit.name, )
 
 
-def create_risk_driver_number(risk_driver: RiskDriver, name: str, value: float, ) -> RiskDriverNumber:
-    return risk_driver.numbers.create(name=name, value=value, )
+def create_risk_driver_data(risk_driver: RiskDriver, name: str, value: float, ) -> RiskDriverData:
+    return risk_driver.data.create(name=name, value=value, )
 
 
 def random_companies(number_of_companies: int, from_year: int, to_year: int):
@@ -128,7 +152,7 @@ def random_credit_reports(company: Company, from_year: int, to_year: int):
 
         financials_report = create_financials_report(company=company, financials_report_date=report_date, )
 
-        random_financials_numbers(financials_report=financials_report)
+        random_financials(financials_report=financials_report)
         random_risk_drivers(financials_report=financials_report)
 
         financials_reports.append(financials_report)
@@ -138,20 +162,20 @@ def random_credit_reports(company: Company, from_year: int, to_year: int):
                              financials_reports=financials_reports, )
 
 
-def random_financials_numbers(financials_report: FinancialsReport):
+def random_financials(financials_report: FinancialsReport):
     for name, unit in FINANCIALS:
-        create_financials_number(financials_report=financials_report, name=name, unit=unit, value=random_value(unit))
+        create_financials(financials_report=financials_report, name=name, unit=unit, value=random_value(unit))
 
 
 def random_risk_drivers(financials_report: FinancialsReport):
     for category, unit in RISK_DRIVERS:
         risk_driver = create_risk_driver(financials_report=financials_report, category=category, unit=unit)
-        random_risk_driver_numbers(risk_driver=risk_driver, unit=unit)
+        random_risk_driver_data(risk_driver=risk_driver, unit=unit)
 
 
-def random_risk_driver_numbers(risk_driver: RiskDriver, unit: Unit):
-    for name in RISK_DRIVER_NUMBERS:
-        create_risk_driver_number(risk_driver=risk_driver, name=name, value=random_value(unit))
+def random_risk_driver_data(risk_driver: RiskDriver, unit: Unit):
+    for name in RISK_DRIVER_DATA:
+        create_risk_driver_data(risk_driver=risk_driver, name=name, value=random_value(unit))
 
 
 def random_value(unit: Unit) -> float:
@@ -198,9 +222,25 @@ def financials_report_1(company):
         company=company,
         financials_report_date=datetime(year=2014, month=3, day=31, tzinfo=timezone.utc),
     )
-    random_financials_numbers(financials_report=financials_report)
+    financials_report_1_financials(financials_report)
     random_risk_drivers(financials_report=financials_report)
     return financials_report
+
+
+def financials_report_1_financials(financials_report: FinancialsReport):
+    create_financials(financials_report, REVENUE, Unit.CURRENCY, 16_850_116)
+    create_financials(financials_report, EBIT, Unit.CURRENCY, 3_030_400)
+    create_financials(financials_report, EBITDA, Unit.CURRENCY, 5_166_200)
+    create_financials(financials_report, INTEREST_EXPENSE, Unit.CURRENCY, -301_300)
+    create_financials(financials_report, PROFIT_BEFORE_TAX, Unit.CURRENCY, 4_347_900)
+    create_financials(financials_report, PROFIT_AFTER_TAX, Unit.CURRENCY, 3_652_000)
+    create_financials(financials_report, CASH_EQUIVALENTS, Unit.CURRENCY, 622_500)
+    create_financials(financials_report, TOTAL_ASSETS, Unit.CURRENCY, 39_320_000)
+    create_financials(financials_report, TOTAL_LIABILITIES, Unit.CURRENCY, 15_427_400)
+    create_financials(financials_report, TOTAL_DEBT, Unit.CURRENCY, 15_087_000)
+    create_financials(financials_report, TOTAL_EQUITY, Unit.CURRENCY, 23_868_200)
+    create_financials(financials_report, CURRENT_ASSETS, Unit.CURRENCY, 4_351_300)
+    create_financials(financials_report, CURRENT_LIABILITIES, Unit.CURRENCY, 5_690_000)
 
 
 def financials_report_2(company):
@@ -209,9 +249,25 @@ def financials_report_2(company):
         company=company,
         financials_report_date=datetime(year=2015, month=3, day=31, tzinfo=timezone.utc),
     )
-    random_financials_numbers(financials_report=financials_report)
+    financials_report_2_financials(financials_report)
     random_risk_drivers(financials_report=financials_report)
     return financials_report
+
+
+def financials_report_2_financials(financials_report: FinancialsReport):
+    create_financials(financials_report, REVENUE, Unit.CURRENCY, 17_222_900)
+    create_financials(financials_report, EBIT, Unit.CURRENCY, 2_927_200)
+    create_financials(financials_report, EBITDA, Unit.CURRENCY, 5_091_700)
+    create_financials(financials_report, INTEREST_EXPENSE, Unit.CURRENCY, -305_000)
+    create_financials(financials_report, PROFIT_BEFORE_TAX, Unit.CURRENCY, 4_463_000)
+    create_financials(financials_report, PROFIT_AFTER_TAX, Unit.CURRENCY, 3_781_500)
+    create_financials(financials_report, CASH_EQUIVALENTS, Unit.CURRENCY, 562_800)
+    create_financials(financials_report, TOTAL_ASSETS, Unit.CURRENCY, 42_066_800)
+    create_financials(financials_report, TOTAL_LIABILITIES, Unit.CURRENCY, 17_298_900)
+    create_financials(financials_report, TOTAL_DEBT, Unit.CURRENCY, 17_602_500)
+    create_financials(financials_report, TOTAL_EQUITY, Unit.CURRENCY, 24_733_300)
+    create_financials(financials_report, CURRENT_ASSETS, Unit.CURRENCY, 4_767_600)
+    create_financials(financials_report, CURRENT_LIABILITIES, Unit.CURRENCY, 5_756_800)
 
 
 def financials_report_3(company):
@@ -220,83 +276,112 @@ def financials_report_3(company):
         company=company,
         financials_report_date=datetime(year=2016, month=3, day=31, tzinfo=timezone.utc),
     )
-    random_financials_numbers(financials_report=financials_report)
+    financials_report_3_financials(financials_report)
     random_risk_drivers(financials_report=financials_report)
 
     return financials_report
 
 
-def financials_report_4(company):
+def financials_report_3_financials(financials_report: FinancialsReport):
+    create_financials(financials_report, REVENUE, Unit.CURRENCY, 16_961_200)
+    create_financials(financials_report, EBIT, Unit.CURRENCY, 2_864_200)
+    create_financials(financials_report, EBITDA, Unit.CURRENCY, 5_016_100)
+    create_financials(financials_report, INTEREST_EXPENSE, Unit.CURRENCY, -355_400)
+    create_financials(financials_report, PROFIT_BEFORE_TAX, Unit.CURRENCY, 4_580_800)
+    create_financials(financials_report, PROFIT_AFTER_TAX, Unit.CURRENCY, 3_870_800)
+    create_financials(financials_report, CASH_EQUIVALENTS, Unit.CURRENCY, 461_800)
+    create_financials(financials_report, TOTAL_ASSETS, Unit.CURRENCY, 43_565_700)
+    create_financials(financials_report, TOTAL_LIABILITIES, Unit.CURRENCY, 18_563_200)
+    create_financials(financials_report, TOTAL_DEBT, Unit.CURRENCY, 19_005_800)
+    create_financials(financials_report, TOTAL_EQUITY, Unit.CURRENCY, 24_966_800)
+    create_financials(financials_report, CURRENT_ASSETS, Unit.CURRENCY, 5_165_400)
+    create_financials(financials_report, CURRENT_LIABILITIES, Unit.CURRENCY, 6_539_900)
+
+
+def financials_report_4(company: Company):
     # financial report 4
     financials_report = create_financials_report(
         company=company,
         financials_report_date=datetime(year=2017, month=3, day=31, tzinfo=timezone.utc),
     )
-    # financials_numbers=[],
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Profitability',
-                                     unit=Unit.PERCENTAGE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=5.7)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=7.7)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=5.7)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=6.7)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Debt Coverage',
-                                     unit=Unit.MULTIPLICATIVE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=76.2)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=81.2)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=70.4)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=75.8)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Leverage',
-                                     unit=Unit.PERCENTAGE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=40.5)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=41.5)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=37.7)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=39.6)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Liquidity',
-                                     unit=Unit.PERCENTAGE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1.11)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1.58)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1.06)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1.32)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Size', unit=Unit.CURRENCY, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=48_294_200)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=48_294_200)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=39_320_000)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=43_807_100)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Country Risk',
-                                     unit=Unit.PERCENTAGE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Industry Risk',
-                                     unit=Unit.PERCENTAGE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
-
-    risk_driver = create_risk_driver(financials_report=financials_report, category='Competitiveness',
-                                     unit=Unit.PERCENTAGE, )
-    create_risk_driver_number(risk_driver=risk_driver, name='Latest', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Maximum', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Minimum', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Average', value=1)
-    create_risk_driver_number(risk_driver=risk_driver, name='Industry Average', value=1)
+    financials_report_4_financials(financials_report)
+    financials_report_4_risk_drivers(financials_report)
 
     return financials_report
+
+
+def financials_report_4_financials(financials_report: FinancialsReport):
+    create_financials(financials_report, REVENUE, Unit.CURRENCY, 16_711_400)
+    create_financials(financials_report, EBIT, Unit.CURRENCY, 2_761_600)
+    create_financials(financials_report, EBITDA, Unit.CURRENCY, 5_003_600)
+    create_financials(financials_report, INTEREST_EXPENSE, Unit.CURRENCY, -370_100)
+    create_financials(financials_report, PROFIT_BEFORE_TAX, Unit.CURRENCY, 4_515_400)
+    create_financials(financials_report, PROFIT_AFTER_TAX, Unit.CURRENCY, 3_852_700)
+    create_financials(financials_report, CASH_EQUIVALENTS, Unit.CURRENCY, 533_800)
+    create_financials(financials_report, TOTAL_ASSETS, Unit.CURRENCY, 48_294_200)
+    create_financials(financials_report, TOTAL_LIABILITIES, Unit.CURRENCY, 20_080_600)
+    create_financials(financials_report, TOTAL_DEBT, Unit.CURRENCY, 19_069_400)
+    create_financials(financials_report, TOTAL_EQUITY, Unit.CURRENCY, 28_191_200)
+    create_financials(financials_report, CURRENT_ASSETS, Unit.CURRENCY, 5_917_500)
+    create_financials(financials_report, CURRENT_LIABILITIES, Unit.CURRENCY, 9_272_300)
+
+
+def financials_report_4_risk_drivers(financials_report: FinancialsReport):
+    risk_driver = create_risk_driver(financials_report=financials_report, category=PROFITABILITY,
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=5.7)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=7.7)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=5.7)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=6.7)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=DEBT_COVERAGE,
+                                     unit=Unit.MULTIPLICATIVE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=76.2)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=81.2)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=70.4)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=75.8)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=LEVERAGE,
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=40.5)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=41.5)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=37.7)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=39.6)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=LIQUIDITY,
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=1.11)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=1.58)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=1.06)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=1.32)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=SIZE, unit=Unit.CURRENCY, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=48_294_200)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=48_294_200)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=39_320_000)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=43_807_100)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=COUNTRY_RISK,
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=INDUSTRY_RISK,
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
+    risk_driver = create_risk_driver(financials_report=financials_report, category=COMPETITIVENESS,
+                                     unit=Unit.PERCENTAGE, )
+    create_risk_driver_data(risk_driver=risk_driver, name='Latest', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Maximum', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Minimum', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Average', value=1)
+    create_risk_driver_data(risk_driver=risk_driver, name='Industry Average', value=1)
 
 
 class Command(BaseCommand):
