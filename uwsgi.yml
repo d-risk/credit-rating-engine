@@ -6,9 +6,10 @@ uwsgi:
   master: true
   plugin-list: true
   plugins: python3
-  processes: 2
-  threads: 2
+  processes: 1
   stats: :8081
+  threads: 1
+  thunder-lock: true
   uid: app
   venv: venv-app
   wsgi-file: credit_report_service/wsgi.py
