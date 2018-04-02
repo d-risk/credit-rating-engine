@@ -8,6 +8,7 @@ uwsgi:
   plugins: python3
   processes: 2
   threads: 2
+  stats: :8081
   uid: app
   venv: venv-app
   wsgi-file: credit_report_service/wsgi.py
