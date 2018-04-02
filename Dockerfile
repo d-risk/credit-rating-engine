@@ -3,7 +3,6 @@ FROM alpine:3.7
 RUN apk add --no-cache --update \
         python3 \
     	uwsgi \
-    	uwsgi-http \
     	uwsgi-python3
 
 RUN mkdir /app
