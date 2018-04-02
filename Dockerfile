@@ -21,8 +21,7 @@ COPY --chown=app:app requirements.freeze.txt ${workdir}
 
 RUN python3 -m venv venv-app \
     && source venv-app/bin/activate \
-    && pip --version \
-    && pip install --no-cache-dir --requirement requirements.freeze.txt
+    && pip3 install --no-cache-dir --requirement requirements.freeze.txt
 
 COPY --chown=app:app . ${workdir}
 
