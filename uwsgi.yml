@@ -1,8 +1,8 @@
 uwsgi:
-  http-auto-chunked: true
-  http-keepalive: true
 #  chdir: /home/app
   http-socket: :8080
+#  http-auto-chunked: true
+#  http-keepalive: true
   master: true
   plugin-list: true
   plugins: python3
