@@ -20,4 +20,4 @@ COPY . /app
 
 CMD ["uwsgi", "--yaml", "uwsgi.yml"]
 
-EXPOSE 80
+EXPOSE 8080
