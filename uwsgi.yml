@@ -1,11 +1,13 @@
 uwsgi:
   http-auto-chunked: true
   http-keepalive: true
+#  chdir: /home/app
   http-socket: :8080
   master: true
   plugin-list: true
   plugins: python3
   processes: 2
   threads: 2
+  uid: app
   venv: venv-app
   wsgi-file: credit_report_service/wsgi.py
