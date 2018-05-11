@@ -1,12 +1,72 @@
 import urllib.request
 from datetime import datetime, timezone
 from random import randint, choice, random, uniform, randrange
-from typing import List
+from typing import List, Tuple
 
-from credit_report.management.commands.populatedb import RATINGS, FINANCIALS, RISK_DRIVERS, RISK_DRIVER_DATA
 from credit_report.management.commands.models import create_company, create_credit_report, create_financials_report, \
     create_financials, create_risk_driver, create_risk_driver_data
 from credit_report.models import Company, FinancialsReport, RiskDriver, Unit
+
+# financials names
+REVENUE = 'Revenue'
+EBIT = 'EBIT'
+EBITDA = 'EBITDA'
+INTEREST_EXPENSE = 'Interest Expense'
+PROFIT_BEFORE_TAX = 'Profit Before Tax'
+PROFIT_AFTER_TAX = 'Profit After Tax'
+CASH_EQUIVALENTS = 'Cash and Cash Equivalents'
+TOTAL_ASSETS = 'Total Assets'
+TOTAL_LIABILITIES = 'Total Liabilities'
+TOTAL_DEBT = 'Total Debt'
+TOTAL_EQUITY = 'Total Equity'
+CURRENT_ASSETS = 'Current Assets'
+CURRENT_LIABILITIES = 'Current Liabilities'
+
+# risk drivers
+PROFITABILITY = 'Profitability'
+DEBT_COVERAGE = 'Debt Coverage'
+LEVERAGE = 'Leverage'
+LIQUIDITY = 'Liquidity'
+SIZE = 'Size'
+COUNTRY_RISK = 'Country Risk'
+INDUSTRY_RISK = 'Industry Risk'
+COMPETITIVENESS = 'Competitiveness'
+
+FINANCIALS: List[Tuple[str, Unit]] = [
+    (REVENUE, Unit.CURRENCY),
+    (EBIT, Unit.CURRENCY),
+    (EBITDA, Unit.CURRENCY),
+    (INTEREST_EXPENSE, Unit.CURRENCY),
+    (PROFIT_BEFORE_TAX, Unit.CURRENCY),
+    (PROFIT_AFTER_TAX, Unit.CURRENCY),
+    (CASH_EQUIVALENTS, Unit.CURRENCY),
+    (TOTAL_ASSETS, Unit.CURRENCY),
+    (TOTAL_LIABILITIES, Unit.CURRENCY),
+    (TOTAL_DEBT, Unit.CURRENCY),
+    (TOTAL_EQUITY, Unit.CURRENCY),
+    (CURRENT_ASSETS, Unit.CURRENCY),
+    (CURRENT_LIABILITIES, Unit.CURRENCY),
+]
+RISK_DRIVERS: List[Tuple[str, Unit]] = [
+    (PROFITABILITY, Unit.PERCENTAGE),
+    (DEBT_COVERAGE, Unit.MULTIPLICATIVE),
+    (LEVERAGE, Unit.PERCENTAGE),
+    (LIQUIDITY, Unit.PERCENTAGE),
+    (SIZE, Unit.CURRENCY),
+    (COUNTRY_RISK, Unit.PERCENTAGE),
+    (INDUSTRY_RISK, Unit.PERCENTAGE),
+    (COMPETITIVENESS, Unit.PERCENTAGE),
+]
+
+RISK_DRIVER_DATA: List[str] = [
+    'Latest',
+    'Maximum',
+    'Minimum',
+    'Average',
+    'Industry Average',
+]
+
+RATINGS = ['A', 'B', 'C']
 
 
 def random_companies(number_of_companies: int, from_year: int, to_year: int):
