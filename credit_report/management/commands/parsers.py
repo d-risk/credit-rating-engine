@@ -34,29 +34,26 @@ COLUMN_NAMES: str = [
 DATETIME_FORMAT: str = '%Y-%m-%d'
 
 
-class ImportCSV:
-
-    @staticmethod
-    def parse(file_name: str) -> None:
-        try:
-            with open(file_name) as file:
-                reader = csv.DictReader(file)
-                if COLUMN_NAMES == reader.fieldnames:
-                    for row in reader:
-                        company_name = row[COLUMN_NAMES[0]]
-                        company, created = create_company(company_name)
-                        date = datetime.strptime(row[COLUMN_NAMES[1]], DATETIME_FORMAT)
-                        financials_report = create_financials_report(company=company, financials_report_date=date)
-                        for i in range(2, len(row)):
-                            name = COLUMN_NAMES[i]
-                            value = float(row[name])
-                            create_financials(
-                                financials_report=financials_report,
-                                name=name,
-                                unit=Unit.CURRENCY,
-                                value=value,
-                            )
-                else:
-                    print(f'Unable read {file_name} because the headers do not match')
-        except FileNotFoundError:
-            print(f'Cannot find file \'{file_name}\'')
+def parse(file_name: str) -> None:
+    try:
+        with open(file_name) as file:
+            reader = csv.DictReader(file)
+            if COLUMN_NAMES == reader.fieldnames:
+                for row in reader:
+                    company_name = row[COLUMN_NAMES[0]]
+                    company, created = create_company(company_name)
+                    date = datetime.strptime(row[COLUMN_NAMES[1]], DATETIME_FORMAT)
+                    financials_report = create_financials_report(company=company, financials_report_date=date)
+                    for i in range(2, len(row)):
+                        name = COLUMN_NAMES[i]
+                        value = float(row[name])
+                        create_financials(
+                            financials_report=financials_report,
+                            name=name,
+                            unit=Unit.CURRENCY,
+                            value=value,
+                        )
+            else:
+                print(f'Unable read {file_name} because the headers do not match')
+    except FileNotFoundError:
+        print(f'Cannot find file \'{file_name}\'')
