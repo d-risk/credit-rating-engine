@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 from random import randint, choice, random, uniform, randrange
 from typing import List
 
-from credit_report.management.commands.populatedb import create_company, create_financials_report, create_credit_report, \
-    RATINGS, FINANCIALS, create_financials, RISK_DRIVERS, create_risk_driver, RISK_DRIVER_DATA, \
-    create_risk_driver_data
+from credit_report.management.commands.populatedb import RATINGS, FINANCIALS, RISK_DRIVERS, RISK_DRIVER_DATA
+from credit_report.management.commands.models import create_company, create_credit_report, create_financials_report, \
+    create_financials, create_risk_driver, create_risk_driver_data
 from credit_report.models import Company, FinancialsReport, RiskDriver, Unit
 
 

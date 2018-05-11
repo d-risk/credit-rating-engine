@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 
-from credit_report.management.commands.populatedb import create_company, create_financials_report, create_financials
+from credit_report.management.commands.models import create_company, create_financials_report, create_financials
 from credit_report.models import Unit
 
 COLUMN_NAMES: str = [
