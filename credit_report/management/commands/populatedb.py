@@ -5,6 +5,7 @@ from typing import Tuple, List
 
 from django.core.management.base import BaseCommand
 
+from credit_report.management.commands.parsers import ImportCSV
 from credit_report.models import Company, CreditReport, RiskDriver, Unit, FinancialsReport, Financials, \
     RiskDriverData
 
@@ -70,8 +71,8 @@ RISK_DRIVER_DATA: List[str] = [
 
 def create_company(
         name: str,
-        description: str = 'random industry',
-        industry: str = 'random description',
+        description: str = '',
+        industry: str = '',
 ) -> Tuple[Company, bool]:
     company, created = Company.objects.get_or_create(
         defaults={
@@ -390,5 +391,8 @@ class Command(BaseCommand):
         parser.add_argument(AMOUNT, type=int)
 
     def handle(self, *args, **options):
-        create_singtel_company()
-        random_companies(options[AMOUNT], 2015, 2018)
+        ImportCSV.parse('financial-reports.csv')
+        # create_singtel_company()
+        # random_companies(options[AMOUNT], 2015, 2018)
+
+
