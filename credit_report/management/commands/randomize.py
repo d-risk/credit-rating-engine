@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 from random import randint, choice, random, uniform, randrange
 from typing import List, Tuple
 
-from credit_report.management.commands.models import create_company, create_credit_report, create_financials_report, \
-    create_financials, create_risk_driver, create_risk_driver_data
-from credit_report.models import Company, FinancialsReport, RiskDriver, Unit
+from credit_report.management.commands.models import create_company, create_credit_report, create_financial_report, \
+    create_financials, create_risk_driver
+from credit_report.models import Company, FinancialReport, Unit
 
 # financials names
 REVENUE = 'Revenue'
@@ -58,20 +58,14 @@ RISK_DRIVERS: List[Tuple[str, Unit]] = [
     (COMPETITIVENESS, Unit.PERCENTAGE),
 ]
 
-RISK_DRIVER_DATA: List[str] = [
-    'Latest',
-    'Maximum',
-    'Minimum',
-    'Average',
-    'Industry Average',
-]
-
 RATINGS = ['A', 'B', 'C']
+
+NOUN_LIST_URL = 'http://www.desiquintans.com/downloads/nounlist/nounlist.txt'
 
 
 def random_companies(number_of_companies: int, from_year: int, to_year: int):
     companies = []
-    with urllib.request.urlopen('http://www.desiquintans.com/downloads/nounlist/nounlist.txt') as response:
+    with urllib.request.urlopen(NOUN_LIST_URL) as response:
         nouns = response.read().decode().splitlines()
         print(f'Using {len(nouns)} nouns to create {number_of_companies} companies:')
         for i in range(number_of_companies):
@@ -85,36 +79,30 @@ def random_companies(number_of_companies: int, from_year: int, to_year: int):
 
 
 def random_credit_reports(company: Company, from_year: int, to_year: int):
-    financials_reports: List[FinancialsReport] = []
+    financials_reports: List[FinancialReport] = []
     for year in range(from_year, to_year + 1):
         report_date = datetime(year=year, month=1, day=1, tzinfo=timezone.utc)
 
-        financials_report = create_financials_report(company=company, financials_report_date=report_date, )
+        financials_report = create_financial_report(company=company, financial_report_date=report_date, )
 
         random_financials(financials_report=financials_report)
-        random_risk_drivers(financials_report=financials_report)
+        random_risk_drivers(financial_report=financials_report)
 
         financials_reports.append(financials_report)
 
         create_credit_report(company=company, credit_report_score=randint(1, 1000),
                              credit_report_rating=choice(RATINGS), credit_report_date=report_date,
-                             financials_reports=financials_reports, )
+                             financial_reports=financials_reports, )
 
 
-def random_financials(financials_report: FinancialsReport):
+def random_financials(financials_report: FinancialReport):
     for name, unit in FINANCIALS:
-        create_financials(financials_report=financials_report, name=name, unit=unit, value=random_value(unit))
+        create_financials(financial_report=financials_report, name=name, unit=unit, value=random_value(unit))
 
 
-def random_risk_drivers(financials_report: FinancialsReport):
-    for category, unit in RISK_DRIVERS:
-        risk_driver = create_risk_driver(financials_report=financials_report, category=category, unit=unit)
-        random_risk_driver_data(risk_driver=risk_driver, unit=unit)
-
-
-def random_risk_driver_data(risk_driver: RiskDriver, unit: Unit):
-    for name in RISK_DRIVER_DATA:
-        create_risk_driver_data(risk_driver=risk_driver, name=name, value=random_value(unit))
+def random_risk_drivers(financial_report: FinancialReport):
+    for name, unit in RISK_DRIVERS:
+        create_risk_driver(financial_report=financial_report, name=name, unit=unit, value=random_value(unit), )
 
 
 def random_value(unit: Unit) -> float:

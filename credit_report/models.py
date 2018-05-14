@@ -29,17 +29,17 @@ class CreditReport(models.Model):
         db_table = 'app_credit_reports'
 
 
-class FinancialsReport(models.Model):
+class FinancialReport(models.Model):
     company_id = models.UUIDField()
-    credit_reports = models.ManyToManyField(CreditReport, related_name='financials_reports', )
-    financials_report_date = models.DateTimeField(default=now, )
+    credit_reports = models.ManyToManyField(CreditReport, related_name='financial_reports', )
+    financial_report_date = models.DateTimeField(default=now, )
 
     class Meta:
-        db_table = 'app_financials_reports'
+        db_table = 'app_financial_reports'
 
 
 class Financials(models.Model):
-    financials_report = models.ForeignKey(FinancialsReport, on_delete=models.PROTECT,
+    financials_report = models.ForeignKey(FinancialReport, on_delete=models.PROTECT,
                                           related_name='financials', )
     name = models.CharField(max_length=50, )
     # unit = models.CharField(choices=UnitEEE.choices(), max_length=20, )
@@ -51,22 +51,15 @@ class Financials(models.Model):
 
 
 class RiskDriver(models.Model):
-    financials_report = models.ForeignKey(FinancialsReport, on_delete=models.PROTECT, related_name='risk_drivers', )
-    category = models.CharField(max_length=50, )
+    financial_report = models.ForeignKey(FinancialReport, on_delete=models.PROTECT, related_name='risk_drivers', )
+
+    name = models.CharField(max_length=50, )
     # unit = models.CharField(choices=UnitEEE.choices(), max_length=20, )
     unit = models.CharField(max_length=20, )
-
-    class Meta:
-        db_table = 'app_risk_drivers'
-
-
-class RiskDriverData(models.Model):
-    risk_driver = models.ForeignKey(RiskDriver, on_delete=models.PROTECT, related_name='data', )
-    name = models.CharField(max_length=50, )
     value = models.DecimalField(decimal_places=9, max_digits=99, )
 
     class Meta:
-        db_table = 'app_risk_drivers_data'
+        db_table = 'app_risk_drivers'
 
 
 class Company(models.Model):

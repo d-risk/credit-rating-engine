@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 
-from credit_report.management.commands.models import create_company, create_financials_report, create_financials
+from credit_report.management.commands.models import create_company, create_financial_report, create_financials
 from credit_report.models import Unit
 
 COLUMN_NAMES: str = [
@@ -43,12 +43,12 @@ def parse(file_name: str) -> None:
                     company_name = row[COLUMN_NAMES[0]]
                     company, created = create_company(company_name)
                     date = datetime.strptime(row[COLUMN_NAMES[1]], DATETIME_FORMAT)
-                    financials_report = create_financials_report(company=company, financials_report_date=date)
+                    financial_report = create_financial_report(company=company, financial_report_date=date)
                     for i in range(2, len(row)):
                         name = COLUMN_NAMES[i]
                         value = float(row[name])
                         create_financials(
-                            financials_report=financials_report,
+                            financial_report=financial_report,
                             name=name,
                             unit=Unit.CURRENCY,
                             value=value,

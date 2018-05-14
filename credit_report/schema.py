@@ -9,9 +9,9 @@ class CreditReport(DjangoObjectType):
         model = credit_report.models.CreditReport
 
 
-class FinancialsReport(DjangoObjectType):
+class FinancialReport(DjangoObjectType):
     class Meta:
-        model = credit_report.models.FinancialsReport
+        model = credit_report.models.FinancialReport
 
 
 class Financials(DjangoObjectType):
@@ -22,11 +22,6 @@ class Financials(DjangoObjectType):
 class RiskDriver(DjangoObjectType):
     class Meta:
         model = credit_report.models.RiskDriver
-
-
-class RiskDriverData(DjangoObjectType):
-    class Meta:
-        model = credit_report.models.RiskDriverData
 
 
 class Company(DjangoObjectType):

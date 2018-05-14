@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Tuple, List
 
-from credit_report.models import Company, FinancialsReport, CreditReport, Unit, Financials, RiskDriver, RiskDriverData
+from credit_report.models import Company, FinancialReport, CreditReport, Unit, Financials, RiskDriver
 
 
 def create_company(
@@ -26,7 +26,7 @@ def create_credit_report(
         credit_report_score: int,
         credit_report_rating: str,
         credit_report_date: datetime,
-        financials_reports: List[FinancialsReport] = None,
+        financial_reports: List[FinancialReport] = None,
 ) -> CreditReport:
     credit_report = CreditReport.objects.create(
         company_id=company.id,
@@ -34,33 +34,29 @@ def create_credit_report(
         credit_report_rating=credit_report_rating,
         credit_report_date=credit_report_date,
     )
-    if financials_reports:
-        credit_report.financials_reports.set(financials_reports)
+    if financial_reports:
+        credit_report.financial_reports.set(financial_reports)
     print(f'        + Credit Report \'{credit_report.id}\' ({credit_report.credit_report_date}) created', )
     return credit_report
 
 
-def create_financials_report(
+def create_financial_report(
         company: Company,
-        financials_report_date: datetime,
-) -> FinancialsReport:
-    financials_report = FinancialsReport.objects.create(
+        financial_report_date: datetime,
+) -> FinancialReport:
+    financial_report = FinancialReport.objects.create(
         company_id=company.id,
-        financials_report_date=financials_report_date,
+        financial_report_date=financial_report_date,
     )
     print(
-        f'        + Financial Report \'{financials_report.id}\' ({financials_report.financials_report_date}) created', )
-    return financials_report
+        f'        + Financial Report \'{financial_report.id}\' ({financial_report.financial_report_date}) created', )
+    return financial_report
 
 
-def create_financials(financials_report: FinancialsReport, name: str, unit: Unit,
+def create_financials(financial_report: FinancialReport, name: str, unit: Unit,
                       value: float, ) -> Financials:
-    return financials_report.financials.create(name=name, unit=unit.name, value=value, )
+    return financial_report.financials.create(name=name, unit=unit.name, value=value, )
 
 
-def create_risk_driver(financials_report: FinancialsReport, category: str, unit: Unit, ) -> RiskDriver:
-    return financials_report.risk_drivers.create(category=category, unit=unit.name, )
-
-
-def create_risk_driver_data(risk_driver: RiskDriver, name: str, value: float, ) -> RiskDriverData:
-    return risk_driver.data.create(name=name, value=value, )
+def create_risk_driver(financial_report: FinancialReport, name: str, unit: Unit, value: float, ) -> RiskDriver:
+    return financial_report.risk_drivers.create(name=name, unit=unit.name, value=value, )
