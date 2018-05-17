@@ -1,1 +1,1 @@
-# credit-rating-engine
+# credit-rating-service
