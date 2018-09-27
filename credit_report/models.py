@@ -1,5 +1,4 @@
 import enum
-import uuid
 from typing import Tuple, List
 
 from django.db import models
@@ -7,6 +6,9 @@ from django.utils.timezone import now
 
 
 # Create your models here.
+
+
+
 @enum.unique
 class Unit(enum.Enum):
     UNKNOWN = enum.auto()
@@ -19,11 +21,13 @@ class Unit(enum.Enum):
         return list((x.value, x.name) for x in cls)
 
 
+# Annex G - Credit Report Service
+# SQL data model
 class CreditReport(models.Model):
     company_id = models.UUIDField()
-    credit_report_score = models.IntegerField()
-    credit_report_rating = models.CharField(max_length=5, )
-    credit_report_date = models.DateTimeField(default=now, )
+    credit_score = models.IntegerField()
+    credit_rating = models.CharField(max_length=5, )
+    report_date = models.DateTimeField(default=now, )
 
     class Meta:
         db_table = 'app_credit_reports'
@@ -32,7 +36,7 @@ class CreditReport(models.Model):
 class FinancialReport(models.Model):
     company_id = models.UUIDField()
     credit_reports = models.ManyToManyField(CreditReport, related_name='financial_reports', )
-    financial_report_date = models.DateTimeField(default=now, )
+    report_date = models.DateTimeField(default=now, )
 
     class Meta:
         db_table = 'app_financial_reports'
@@ -60,13 +64,3 @@ class RiskDriver(models.Model):
 
     class Meta:
         db_table = 'app_risk_drivers'
-
-
-class Company(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, )
-    name = models.TextField(unique=True, )
-    industry = models.TextField()
-    description = models.TextField()
-
-    class Meta:
-        db_table = 'app_companies'

@@ -1,11 +1,13 @@
 import urllib.request
 from datetime import datetime, timezone
+from pathlib import Path
 from random import randint, choice, random, uniform, randrange
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 from credit_report.management.commands.models import create_company, create_credit_report, create_financial_report, \
     create_financials, create_risk_driver
-from credit_report.models import Company, FinancialReport, Unit
+from credit_report.models import FinancialReport, Unit
+from company.models import Company
 
 # financials names
 REVENUE = 'Revenue'
@@ -61,20 +63,33 @@ RISK_DRIVERS: List[Tuple[str, Unit]] = [
 RATINGS = ['A', 'B', 'C']
 
 NOUN_LIST_URL = 'http://www.desiquintans.com/downloads/nounlist/nounlist.txt'
+NOUN_LIST_FILENAME = 'noun_list.txt'
 
 
 def random_companies(number_of_companies: int, from_year: int, to_year: int):
     companies = []
-    with urllib.request.urlopen(NOUN_LIST_URL) as response:
-        nouns = response.read().decode().splitlines()
-        print(f'Using {len(nouns)} nouns to create {number_of_companies} companies:')
-        for i in range(number_of_companies):
-            company, created = create_company(
-                name=f'{choice(nouns)} {choice(nouns)} {choice(nouns)}',
-            )
-            if created:
-                companies.append(company)
-                random_credit_reports(company=company, from_year=from_year, to_year=to_year, )
+    path = Path(NOUN_LIST_FILENAME)
+
+    nouns: List[Any] = []
+    if path.is_file():
+        print(f'Using file {path}')
+        with path.open('r') as file:
+            nouns = file.read().splitlines()
+    else:
+        print(f'Downloading noun list from {NOUN_LIST_URL} and saving to file {path}')
+        with urllib.request.urlopen(NOUN_LIST_URL) as response, path.open('x') as file:
+            decode = response.read().decode()
+            file.write(decode)
+            nouns = decode.splitlines()
+
+    print(f'Using {len(nouns)} nouns to create {number_of_companies} companies:')
+    for i in range(number_of_companies):
+        company, created = create_company(
+            name=f'{choice(nouns)} {choice(nouns)} {choice(nouns)}',
+        )
+        if created:
+            companies.append(company)
+            random_credit_reports(company=company, from_year=from_year, to_year=to_year, )
     print(f'{len(companies)} companies created, {number_of_companies - len(companies)} duplicates')
 
 

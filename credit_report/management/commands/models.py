@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Tuple, List
 
-from credit_report.models import Company, FinancialReport, CreditReport, Unit, Financials, RiskDriver
+from credit_report.models import FinancialReport, CreditReport, Unit, Financials, RiskDriver
+from company.models import Company
 
 
 def create_company(

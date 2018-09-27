@@ -1,8 +1,10 @@
 import graphene
+
+import company.schema
 import credit_report.schema
 
 
-class Query(credit_report.schema.Query, graphene.ObjectType):
+class Query(company.schema.CompanyQuery, credit_report.schema.CreditReportQuery, graphene.ObjectType):
     pass
 
 

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Graphene Django
     'graphene_django',
+    'company',
     'credit_report',
     'corsheaders',
 ]

@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.8
 
 RUN apk add --no-cache --update \
         python3 \
@@ -25,6 +25,6 @@ RUN python3 -m venv venv-app \
 
 COPY --chown=app:app . ${workdir}
 
-CMD ["uwsgi", "--yaml", "uwsgi.yml"]
+CMD ["uwsgi", "--yaml", "uwsgi.yaml"]
 
 EXPOSE 8080

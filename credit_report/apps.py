@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class RatingsConfig(AppConfig):
+class CreditReportConfig(AppConfig):
     name = 'credit_report'
