@@ -25,7 +25,7 @@ SECRET_KEY = 'nd0hq4hc!^t3--$7l13iv_%f9qldz2lv!wnzg^!o022g6-e0#p'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
+    'localhost', '127.0.0.1',
     '.d-risk.tech'
 ]
 
