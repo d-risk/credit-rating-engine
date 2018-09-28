@@ -5,3 +5,6 @@
 !main/
 !requirements.freeze.txt
 !uwsgi.yml
+
+# TODO remove the following
+!db.sqlite3
