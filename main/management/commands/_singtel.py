@@ -1,20 +1,30 @@
 from datetime import datetime, timezone
 from random import randint
 
-from credit_report.management.commands.models import create_company, create_credit_report, create_financial_report, \
-    create_financials, create_risk_driver
-from credit_report.management.commands.randomize import random_risk_drivers, REVENUE, EBIT, EBITDA, INTEREST_EXPENSE, \
-    PROFIT_BEFORE_TAX, PROFIT_AFTER_TAX, CASH_EQUIVALENTS, TOTAL_ASSETS, TOTAL_LIABILITIES, TOTAL_DEBT, TOTAL_EQUITY, \
-    CURRENT_ASSETS, CURRENT_LIABILITIES, PROFITABILITY, DEBT_COVERAGE, LEVERAGE, LIQUIDITY, SIZE, COUNTRY_RISK, \
-    INDUSTRY_RISK, COMPETITIVENESS
-from credit_report.models import FinancialReport, Unit
 from company.models import Company
+from credit_report.models import FinancialReport, Unit
+from main.management.commands._company import create_company
+from main.management.commands._creditreport import create_credit_report, create_financial_report, create_financials, \
+    create_risk_driver
+from main.management.commands._randomize import REVENUE, EBIT, EBITDA, INTEREST_EXPENSE, PROFIT_BEFORE_TAX, \
+    PROFIT_AFTER_TAX, CASH_EQUIVALENTS, TOTAL_ASSETS, TOTAL_LIABILITIES, TOTAL_DEBT, TOTAL_EQUITY, CURRENT_ASSETS, \
+    CURRENT_LIABILITIES, PROFITABILITY, DEBT_COVERAGE, LEVERAGE, LIQUIDITY, SIZE, COUNTRY_RISK, INDUSTRY_RISK, \
+    COMPETITIVENESS, random_risk_drivers
 
 
 def create_singtel_company():
     company, created = create_company(
         name='Singapore Telecommunications Limited',
-        description='Singapore Telecommunications Limited provides integrated infocomm technology solutions to enterprise customers primarily in Singapore, Australia, the United States of America, and Europe. The company operates through Group Consumer, Group Enterprise, and Group Digital Life segments. The Group Consumer segment is involved in carriage business, including mobile, pay TV, fixed broadband, and voice, as well as equipment sales. The Group Enterprise segment offers mobile, equipment sales, fixed voice and data, managed services, cloud computing, cyber security, and IT and professional consulting services. The Group Digital Life segment engages in digital marketing, regional video, and advanced analytics and intelligence businesses. The company also operates a venture capital fund that focuses its investments on technologies and solutions. Singapore Telecommunications Limited is headquartered in Singapore.',
+        description='Singapore Telecommunications Limited provides integrated infocomm technology solutions to '
+                    'enterprise customers primarily in Singapore, Australia, the United States of America, '
+                    'and Europe. The company operates through Group Consumer, Group Enterprise, and Group Digital '
+                    'Life segments. The Group Consumer segment is involved in carriage business, including mobile, '
+                    'pay TV, fixed broadband, and voice, as well as equipment sales. The Group Enterprise segment '
+                    'offers mobile, equipment sales, fixed voice and data, managed services, cloud computing, '
+                    'cyber security, and IT and professional consulting services. The Group Digital Life segment '
+                    'engages in digital marketing, regional video, and advanced analytics and intelligence '
+                    'businesses. The company also operates a venture capital fund that focuses its investments on '
+                    'technologies and solutions. Singapore Telecommunications Limited is headquartered in Singapore.',
         industry='Telecommunications',
     )
     if created:

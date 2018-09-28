@@ -2,14 +2,14 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from random import randint, choice, random, uniform, randrange
-from typing import List, Tuple, Any
+from typing import Tuple, List, Any
 
-from credit_report.management.commands.models import create_company, create_credit_report, create_financial_report, \
-    create_financials, create_risk_driver
-from credit_report.models import FinancialReport, Unit
 from company.models import Company
+from credit_report.models import FinancialReport, Unit
+from main.management.commands._company import create_company
+from main.management.commands._creditreport import create_financial_report, create_credit_report, create_financials, \
+    create_risk_driver
 
-# financials names
 REVENUE = 'Revenue'
 EBIT = 'EBIT'
 EBITDA = 'EBITDA'
@@ -23,8 +23,6 @@ TOTAL_DEBT = 'Total Debt'
 TOTAL_EQUITY = 'Total Equity'
 CURRENT_ASSETS = 'Current Assets'
 CURRENT_LIABILITIES = 'Current Liabilities'
-
-# risk drivers
 PROFITABILITY = 'Profitability'
 DEBT_COVERAGE = 'Debt Coverage'
 LEVERAGE = 'Leverage'
@@ -33,7 +31,6 @@ SIZE = 'Size'
 COUNTRY_RISK = 'Country Risk'
 INDUSTRY_RISK = 'Industry Risk'
 COMPETITIVENESS = 'Competitiveness'
-
 FINANCIALS: List[Tuple[str, Unit]] = [
     (REVENUE, Unit.CURRENCY),
     (EBIT, Unit.CURRENCY),
@@ -59,9 +56,7 @@ RISK_DRIVERS: List[Tuple[str, Unit]] = [
     (INDUSTRY_RISK, Unit.PERCENTAGE),
     (COMPETITIVENESS, Unit.PERCENTAGE),
 ]
-
 RATINGS = ['A', 'B', 'C']
-
 NOUN_LIST_URL = 'http://www.desiquintans.com/downloads/nounlist/nounlist.txt'
 NOUN_LIST_FILENAME = 'noun_list.txt'
 

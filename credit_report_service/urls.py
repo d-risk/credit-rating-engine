@@ -1,7 +1,7 @@
-"""creditratingservice URL Configuration
+"""credit_report_service URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.0/topics/http/urls/
+    https://docs.djangoproject.com/en/2.1/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
-    path(r'graphql', GraphQLView.as_view(graphiql=True)),
+    path('admin/', admin.site.urls),
+    path('graphql', GraphQLView.as_view(graphiql=True)),
 ]

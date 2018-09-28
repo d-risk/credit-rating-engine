@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from credit_report.management.commands.parsers import parse
-from credit_report.management.commands.randomize import random_companies
-from credit_report.management.commands.singtel import create_singtel_company
+from main.management.commands._parsers import parse
+from main.management.commands._randomize import random_companies
+from main.management.commands._singtel import create_singtel_company
 
 RANDOMIZE = 'randomize'
 SINGTEL = 'singtel'
