@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from main.management.commands._parsers import parse
-from main.management.commands._randomize import random_companies
-from main.management.commands._singtel import create_singtel_company
+from common.management.commands._parsers import parse
+from common.management.commands._randomize import random_companies
+from common.management.commands._singtel import create_singtel_company
 
 RANDOMIZE = 'randomize'
 SINGTEL = 'singtel'

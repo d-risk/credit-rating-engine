@@ -3,10 +3,10 @@ from random import randint
 
 from company.models import Company
 from credit_report.models import FinancialReport, Unit
-from main.management.commands._company import create_company
-from main.management.commands._creditreport import create_credit_report, create_financial_report, create_financials, \
+from common.management.commands._company import create_company
+from common.management.commands._creditreport import create_credit_report, create_financial_report, create_financials, \
     create_risk_driver
-from main.management.commands._randomize import REVENUE, EBIT, EBITDA, INTEREST_EXPENSE, PROFIT_BEFORE_TAX, \
+from common.management.commands._randomize import REVENUE, EBIT, EBITDA, INTEREST_EXPENSE, PROFIT_BEFORE_TAX, \
     PROFIT_AFTER_TAX, CASH_EQUIVALENTS, TOTAL_ASSETS, TOTAL_LIABILITIES, TOTAL_DEBT, TOTAL_EQUITY, CURRENT_ASSETS, \
     CURRENT_LIABILITIES, PROFITABILITY, DEBT_COVERAGE, LEVERAGE, LIQUIDITY, SIZE, COUNTRY_RISK, INDUSTRY_RISK, \
     COMPETITIVENESS, random_risk_drivers

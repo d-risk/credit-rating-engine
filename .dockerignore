@@ -1,10 +1,11 @@
 *
+!common/
 !company/
 !credit_report/
 !credit_report_service/
-!main/
 !requirements.freeze.txt
 !uwsgi.yaml
 
 # TODO remove the following
 !db.sqlite3
+!manage.py

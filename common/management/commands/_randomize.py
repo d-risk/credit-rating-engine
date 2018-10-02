@@ -6,8 +6,8 @@ from typing import Tuple, List, Any
 
 from company.models import Company
 from credit_report.models import FinancialReport, Unit
-from main.management.commands._company import create_company
-from main.management.commands._creditreport import create_financial_report, create_credit_report, create_financials, \
+from common.management.commands._company import create_company
+from common.management.commands._creditreport import create_financial_report, create_credit_report, create_financials, \
     create_risk_driver
 
 REVENUE = 'Revenue'

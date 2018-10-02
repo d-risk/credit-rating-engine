@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 
     # Graphene Django
     'graphene_django',
-    'main',
+    'common',
     'company',
     'credit_report',
 ]

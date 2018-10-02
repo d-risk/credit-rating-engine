@@ -2,8 +2,8 @@ import csv
 from datetime import datetime
 
 from credit_report.models import Unit
-from main.management.commands._company import create_company
-from main.management.commands._creditreport import create_financial_report, create_financials
+from common.management.commands._company import create_company
+from common.management.commands._creditreport import create_financial_report, create_financials
 
 COLUMN_NAMES: str = [
     'Name of PLC', 'Date', 'Total revenue', 'Cost of revenue', 'Gross profit', 'Research development',
