@@ -9,26 +9,32 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+import logging
 import os
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel("INFO")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'nd0hq4hc!^t3--$7l13iv_%f9qldz2lv!wnzg^!o022g6-e0#p'
+SECRET_KEY = os.getenv('APP_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("APP_PRODUCTION") is None or os.getenv("APP_PRODUCTION").lower() == "true"
+logger.info(f'DEBUG={DEBUG}')
 
 ALLOWED_HOSTS = [
-    'localhost', '127.0.0.1',
     '.d-risk.tech'
 ]
+if DEBUG:
+    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
+logger.info(f'ALLOWED_HOSTS={ALLOWED_HOSTS}')
 
 # Application definition
 
@@ -87,7 +93,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -106,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -119,7 +123,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
