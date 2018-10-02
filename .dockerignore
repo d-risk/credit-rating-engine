@@ -4,7 +4,7 @@
 !credit_report_service/
 !main/
 !requirements.freeze.txt
-!uwsgi.yml
+!uwsgi.yaml
 
 # TODO remove the following
 !db.sqlite3
