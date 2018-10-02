@@ -2,7 +2,7 @@ FROM alpine:3.8
 
 RUN apk add --no-cache --update \
         python3 \
-    	uwsgi \
+        uwsgi \
     	uwsgi-python3
 
 ENV user app
@@ -21,10 +21,11 @@ COPY --chown=app:app requirements.freeze.txt ${workdir}
 
 RUN python3 -m venv venv-app \
     && source venv-app/bin/activate \
+#    && pip3 install --upgrade pip \
     && pip3 install --no-cache-dir --requirement requirements.freeze.txt
 
 COPY --chown=app:app . ${workdir}
 
-CMD ["uwsgi", "--yaml", "uwsgi.yaml"]
+CMD ["uwsgi", "--yaml", "uwsgi.yaml", "--plugins", "python3"]
 
 EXPOSE 8080
