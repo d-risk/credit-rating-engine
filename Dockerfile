@@ -7,6 +7,7 @@ RUN apk add --no-cache --update \
 
 ENV user app
 ENV workdir /home/${user}
+ENV APP_SECRET_KEY 123
 
 RUN addgroup -S ${user} && adduser -G ${user} -S ${user}
 
@@ -21,11 +22,10 @@ COPY --chown=app:app requirements.freeze.txt ${workdir}
 
 RUN python3 -m venv venv-app \
     && source venv-app/bin/activate \
-#    && pip3 install --upgrade pip \
     && pip3 install --no-cache-dir --requirement requirements.freeze.txt
 
 COPY --chown=app:app . ${workdir}
 
-CMD ["uwsgi", "--yaml", "uwsgi.yaml", "--plugins", "python3"]
+CMD ["uwsgi", "--yaml", "uwsgi.yaml"]
 
 EXPOSE 8080
