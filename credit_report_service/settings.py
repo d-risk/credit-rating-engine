@@ -12,9 +12,20 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import logging
 import os
 
+from django.utils.crypto import get_random_string
+
+
+def is_production():
+    return os.getenv('APP_PRODUCTION') is not None and os.getenv('APP_PRODUCTION').lower() == 'true'
+
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
+if is_production():
+    logger.setLevel(os.getenv('APP_LOG_LEVEL', 'INFO'))
+else:
+    logger.setLevel('DEBUG')
+logger.info('APP_PRODUCTION=%s', is_production())
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,18 +34,21 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('APP_SECRET_KEY')
+if is_production():
+    SECRET_KEY = os.getenv('APP_SECRET_KEY')
+else:
+    SECRET_KEY = get_random_string(length=50)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("APP_PRODUCTION") is None or os.getenv("APP_PRODUCTION").lower() == "true"
-logger.info(f'DEBUG={DEBUG}')
+DEBUG = not is_production()
+logger.info('DEBUG=%s', DEBUG)
 
 ALLOWED_HOSTS = [
     '.d-risk.tech'
 ]
 if DEBUG:
     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-logger.info(f'ALLOWED_HOSTS={ALLOWED_HOSTS}')
+logger.info('ALLOWED_HOSTS=%s', ALLOWED_HOSTS)
 
 # Application definition
 
