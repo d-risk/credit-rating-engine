@@ -1,3 +1,4 @@
+# this file must be in LF format, CRLF will cause problems parsing
 uwsgi:
 #  chdir: /home/app
   http-socket: :8080
