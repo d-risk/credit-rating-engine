@@ -1,11 +1,11 @@
-import graphene
+from graphene import Schema, ObjectType
 
-import company.schema
-import credit_report.schema
+from company.schema import CompanyQuery
+from credit_report.schema import CreditReportQuery
 
 
-class Query(company.schema.CompanyQuery, credit_report.schema.CreditReportQuery, graphene.ObjectType):
+class Query(CompanyQuery, CreditReportQuery, ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query)
+schema: Schema = Schema(query=Query)

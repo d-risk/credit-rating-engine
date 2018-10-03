@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import logging
 import os
+from logging import Logger
 
 from django.utils.crypto import get_random_string
+from typing import List, Dict, Any
 
 
 def is_production():
@@ -20,7 +22,7 @@ def is_production():
 
 
 logging.basicConfig()
-logger = logging.getLogger(__name__)
+logger: Logger = logging.getLogger(__name__)
 if is_production():
     logger.setLevel(os.getenv('APP_LOG_LEVEL', 'INFO'))
 else:
@@ -28,22 +30,22 @@ else:
 logger.info('APP_PRODUCTION=%s', is_production())
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if is_production():
-    SECRET_KEY = os.getenv('APP_SECRET_KEY')
+    SECRET_KEY: str = os.getenv('APP_SECRET_KEY')
 else:
-    SECRET_KEY = get_random_string(length=50)
+    SECRET_KEY: str = get_random_string(length=50)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = not is_production()
+DEBUG: bool = not is_production()
 logger.info('DEBUG=%s', DEBUG)
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS: List[str] = [
     'd-risk.tech'
 ]
 if DEBUG:
@@ -52,7 +54,7 @@ logger.info('ALLOWED_HOSTS=%s', ALLOWED_HOSTS)
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS: List[str] = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -67,7 +69,7 @@ INSTALLED_APPS = [
     'credit_report',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE: List[str] = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,9 +79,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'credit_report_service.urls'
+ROOT_URLCONF: str = 'credit_report_service.urls'
 
-TEMPLATES = [
+TEMPLATES: List[Dict[str, Any]] = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -95,12 +97,12 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'credit_report_service.wsgi.application'
+WSGI_APPLICATION: str = 'credit_report_service.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
+DATABASES: Dict[str, Dict[str, str]] = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -110,7 +112,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
+AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
@@ -128,22 +130,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE: str = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE: str = 'UTC'
 
-USE_I18N = True
+USE_I18N: bool = True
 
-USE_L10N = True
+USE_L10N: bool = True
 
-USE_TZ = True
+USE_TZ: bool = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL: str = '/static/'
 
 # Graphene
-GRAPHENE = {
+GRAPHENE: Dict[str, str] = {
     'SCHEMA': 'credit_report_service.schema.schema',
 }

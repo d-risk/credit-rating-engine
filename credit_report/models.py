@@ -7,8 +7,6 @@ from django.utils.timezone import now
 
 # Create your models here.
 
-
-
 @enum.unique
 class Unit(enum.Enum):
     UNKNOWN = enum.auto()
