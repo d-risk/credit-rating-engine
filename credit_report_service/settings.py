@@ -44,7 +44,7 @@ DEBUG = not is_production()
 logger.info('DEBUG=%s', DEBUG)
 
 ALLOWED_HOSTS = [
-    '.d-risk.tech'
+    'd-risk.tech'
 ]
 if DEBUG:
     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
