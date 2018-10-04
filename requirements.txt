@@ -1,3 +1,4 @@
-graphene
 django
-graphene_django
+django-filter
+graphene
+graphene-django
