@@ -7,7 +7,6 @@ from common.management.commands._randomize import REVENUE, EBIT, EBITDA, INTERES
     PROFIT_AFTER_TAX, CASH_EQUIVALENTS, TOTAL_ASSETS, TOTAL_LIABILITIES, TOTAL_DEBT, TOTAL_EQUITY, CURRENT_ASSETS, \
     CURRENT_LIABILITIES
 from company.models import Company
-from credit_report.models import FinancialReport
 
 
 def create_singtel_company():
@@ -28,10 +27,10 @@ def create_singtel_company():
     if created:
         # singtel has 4 financial reports
         financial_reports = [
-            financial_report_1(company),
-            financial_report_2(company),
-            financial_report_3(company),
-            financial_report_4(company),
+            financial_report_2014(company),
+            financial_report_2015(company),
+            financial_report_2016(company),
+            financial_report_2017(company),
         ]
 
         # singtel has one credit report
@@ -44,17 +43,12 @@ def create_singtel_company():
         )
 
 
-def financial_report_1(company):
+def financial_report_2014(company):
     # financial report 1
     financial_report = create_financial_report(
         company=company,
-        financial_report_date=datetime(year=2014, month=3, day=31, tzinfo=timezone.utc),
+        report_date=datetime(year=2014, month=3, day=31, tzinfo=timezone.utc),
     )
-    financial_report_1_financials(financial_report)
-    return financial_report
-
-
-def financial_report_1_financials(financial_report: FinancialReport):
     create_financials(financial_report, REVENUE, 16_850_116)
     create_financials(financial_report, EBIT, 3_030_400)
     create_financials(financial_report, EBITDA, 5_166_200)
@@ -68,19 +62,15 @@ def financial_report_1_financials(financial_report: FinancialReport):
     create_financials(financial_report, TOTAL_EQUITY, 23_868_200)
     create_financials(financial_report, CURRENT_ASSETS, 4_351_300)
     create_financials(financial_report, CURRENT_LIABILITIES, 5_690_000)
-
-
-def financial_report_2(company):
-    # financial report 2
-    financial_report = create_financial_report(
-        company=company,
-        financial_report_date=datetime(year=2015, month=3, day=31, tzinfo=timezone.utc),
-    )
-    financial_report_2_financials(financial_report)
     return financial_report
 
 
-def financial_report_2_financials(financial_report: FinancialReport):
+def financial_report_2015(company):
+    # financial report 2
+    financial_report = create_financial_report(
+        company=company,
+        report_date=datetime(year=2015, month=3, day=31, tzinfo=timezone.utc),
+    )
     create_financials(financial_report, REVENUE, 17_222_900)
     create_financials(financial_report, EBIT, 2_927_200)
     create_financials(financial_report, EBITDA, 5_091_700)
@@ -94,19 +84,15 @@ def financial_report_2_financials(financial_report: FinancialReport):
     create_financials(financial_report, TOTAL_EQUITY, 24_733_300)
     create_financials(financial_report, CURRENT_ASSETS, 4_767_600)
     create_financials(financial_report, CURRENT_LIABILITIES, 5_756_800)
-
-
-def financial_report_3(company):
-    # financial report 3
-    financial_report = create_financial_report(
-        company=company,
-        financial_report_date=datetime(year=2016, month=3, day=31, tzinfo=timezone.utc),
-    )
-    financial_report_3_financials(financial_report)
     return financial_report
 
 
-def financial_report_3_financials(financial_report: FinancialReport):
+def financial_report_2016(company):
+    # financial report 3
+    financial_report = create_financial_report(
+        company=company,
+        report_date=datetime(year=2016, month=3, day=31, tzinfo=timezone.utc),
+    )
     create_financials(financial_report, REVENUE, 16_961_200)
     create_financials(financial_report, EBIT, 2_864_200)
     create_financials(financial_report, EBITDA, 5_016_100)
@@ -120,19 +106,15 @@ def financial_report_3_financials(financial_report: FinancialReport):
     create_financials(financial_report, TOTAL_EQUITY, 24_966_800)
     create_financials(financial_report, CURRENT_ASSETS, 5_165_400)
     create_financials(financial_report, CURRENT_LIABILITIES, 6_539_900)
-
-
-def financial_report_4(company: Company):
-    # financial report 4
-    financial_report = create_financial_report(
-        company=company,
-        financial_report_date=datetime(year=2017, month=3, day=31, tzinfo=timezone.utc),
-    )
-    financial_report_4_financials(financial_report)
     return financial_report
 
 
-def financial_report_4_financials(financial_report: FinancialReport):
+def financial_report_2017(company: Company):
+    # financial report 4
+    financial_report = create_financial_report(
+        company=company,
+        report_date=datetime(year=2017, month=3, day=31, tzinfo=timezone.utc),
+    )
     create_financials(financial_report, REVENUE, 16_711_400)
     create_financials(financial_report, EBIT, 2_761_600)
     create_financials(financial_report, EBITDA, 5_003_600)
@@ -146,3 +128,4 @@ def financial_report_4_financials(financial_report: FinancialReport):
     create_financials(financial_report, TOTAL_EQUITY, 28_191_200)
     create_financials(financial_report, CURRENT_ASSETS, 5_917_500)
     create_financials(financial_report, CURRENT_LIABILITIES, 9_272_300)
+    return financial_report
