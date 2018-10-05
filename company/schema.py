@@ -23,7 +23,7 @@ class CompanyNode(DjangoObjectType):
 
     class Meta:
         model = Company
-        interfaces = (Node,)
+        interfaces = [Node, ]
 
     def resolve_company_id(self, info, **args) -> UUID:
         return self.id
