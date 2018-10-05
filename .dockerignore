@@ -8,4 +8,3 @@
 
 # TODO remove the following
 !db.sqlite3
-!manage.py
