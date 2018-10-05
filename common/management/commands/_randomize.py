@@ -71,17 +71,17 @@ def random_companies(number_of_companies: int, from_year: int, to_year: int):
 def random_credit_reports(company: Company, from_year: int, to_year: int):
     financials_reports: List[FinancialReport] = []
     for year in range(from_year, to_year + 1):
-        report_date = datetime(year=year, month=1, day=1, tzinfo=timezone.utc)
-
-        financials_report = create_financial_report(company=company, financial_report_date=report_date, )
-
+        report_date = datetime(year=year, month=randint(1, 12), day=randint(1, 28), tzinfo=timezone.utc)
+        financials_report = create_financial_report(company=company, report_date=report_date, )
         random_financials(financials_report=financials_report)
-
         financials_reports.append(financials_report)
-
-        create_credit_report(company=company, credit_score=uniform(1, 99),
-                             credit_rating=choice(RATINGS), report_date=report_date,
-                             financial_reports=financials_reports, )
+        create_credit_report(
+            company=company,
+            credit_score=uniform(1, 99),
+            credit_rating=choice(RATINGS),
+            report_date=report_date,
+            financial_reports=financials_reports,
+        )
 
 
 def random_financials(financials_report: FinancialReport):

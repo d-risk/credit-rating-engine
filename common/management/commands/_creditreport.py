@@ -26,11 +26,11 @@ def create_credit_report(
 
 def create_financial_report(
         company: Company,
-        financial_report_date: datetime,
+        report_date: datetime,
 ) -> FinancialReport:
     financial_report = FinancialReport.objects.create(
         company_id=company.id,
-        report_date=financial_report_date,
+        report_date=report_date,
         currency='SGD'
     )
     print(
