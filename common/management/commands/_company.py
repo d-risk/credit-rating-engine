@@ -5,8 +5,8 @@ from company.models import Company
 
 def create_company(
         name: str,
-        description: str = '',
-        industry: str = '',
+        description: str = 'description',
+        industry: str = 'industry',
 ) -> Tuple[Company, bool]:
     company, created = Company.objects.get_or_create(
         defaults={

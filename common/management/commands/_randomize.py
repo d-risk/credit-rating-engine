@@ -1,14 +1,13 @@
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from random import randint, choice, random, uniform, randrange
-from typing import Tuple, List, Any
+from random import randint, choice, uniform
+from typing import List
 
-from company.models import Company
-from credit_report.models import FinancialReport, Unit
 from common.management.commands._company import create_company
-from common.management.commands._creditreport import create_financial_report, create_credit_report, create_financials, \
-    create_risk_driver
+from common.management.commands._creditreport import create_financial_report, create_credit_report, create_financials
+from company.models import Company
+from credit_report.models import FinancialReport
 
 REVENUE = 'Revenue'
 EBIT = 'EBIT'
@@ -23,38 +22,20 @@ TOTAL_DEBT = 'Total Debt'
 TOTAL_EQUITY = 'Total Equity'
 CURRENT_ASSETS = 'Current Assets'
 CURRENT_LIABILITIES = 'Current Liabilities'
-PROFITABILITY = 'Profitability'
-DEBT_COVERAGE = 'Debt Coverage'
-LEVERAGE = 'Leverage'
-LIQUIDITY = 'Liquidity'
-SIZE = 'Size'
-COUNTRY_RISK = 'Country Risk'
-INDUSTRY_RISK = 'Industry Risk'
-COMPETITIVENESS = 'Competitiveness'
-FINANCIALS: List[Tuple[str, Unit]] = [
-    (REVENUE, Unit.CURRENCY),
-    (EBIT, Unit.CURRENCY),
-    (EBITDA, Unit.CURRENCY),
-    (INTEREST_EXPENSE, Unit.CURRENCY),
-    (PROFIT_BEFORE_TAX, Unit.CURRENCY),
-    (PROFIT_AFTER_TAX, Unit.CURRENCY),
-    (CASH_EQUIVALENTS, Unit.CURRENCY),
-    (TOTAL_ASSETS, Unit.CURRENCY),
-    (TOTAL_LIABILITIES, Unit.CURRENCY),
-    (TOTAL_DEBT, Unit.CURRENCY),
-    (TOTAL_EQUITY, Unit.CURRENCY),
-    (CURRENT_ASSETS, Unit.CURRENCY),
-    (CURRENT_LIABILITIES, Unit.CURRENCY),
-]
-RISK_DRIVERS: List[Tuple[str, Unit]] = [
-    (PROFITABILITY, Unit.PERCENTAGE),
-    (DEBT_COVERAGE, Unit.MULTIPLICATIVE),
-    (LEVERAGE, Unit.PERCENTAGE),
-    (LIQUIDITY, Unit.PERCENTAGE),
-    (SIZE, Unit.CURRENCY),
-    (COUNTRY_RISK, Unit.PERCENTAGE),
-    (INDUSTRY_RISK, Unit.PERCENTAGE),
-    (COMPETITIVENESS, Unit.PERCENTAGE),
+FINANCIALS: List[str] = [
+    REVENUE,
+    EBIT,
+    EBITDA,
+    INTEREST_EXPENSE,
+    PROFIT_BEFORE_TAX,
+    PROFIT_AFTER_TAX,
+    CASH_EQUIVALENTS,
+    TOTAL_ASSETS,
+    TOTAL_LIABILITIES,
+    TOTAL_DEBT,
+    TOTAL_EQUITY,
+    CURRENT_ASSETS,
+    CURRENT_LIABILITIES,
 ]
 RATINGS = ['A', 'B', 'C']
 NOUN_LIST_URL = 'http://www.desiquintans.com/downloads/nounlist/nounlist.txt'
@@ -65,7 +46,6 @@ def random_companies(number_of_companies: int, from_year: int, to_year: int):
     companies = []
     path = Path(NOUN_LIST_FILENAME)
 
-    nouns: List[Any] = []
     if path.is_file():
         print(f'Using file {path}')
         with path.open('r') as file:
@@ -96,33 +76,14 @@ def random_credit_reports(company: Company, from_year: int, to_year: int):
         financials_report = create_financial_report(company=company, financial_report_date=report_date, )
 
         random_financials(financials_report=financials_report)
-        random_risk_drivers(financial_report=financials_report)
 
         financials_reports.append(financials_report)
 
-        create_credit_report(company=company, credit_report_score=randint(1, 1000),
-                             credit_report_rating=choice(RATINGS), credit_report_date=report_date,
+        create_credit_report(company=company, credit_score=uniform(1, 99),
+                             credit_rating=choice(RATINGS), report_date=report_date,
                              financial_reports=financials_reports, )
 
 
 def random_financials(financials_report: FinancialReport):
-    for name, unit in FINANCIALS:
-        create_financials(financial_report=financials_report, name=name, unit=unit, value=random_value(unit))
-
-
-def random_risk_drivers(financial_report: FinancialReport):
-    for name, unit in RISK_DRIVERS:
-        create_risk_driver(financial_report=financial_report, name=name, unit=unit, value=random_value(unit), )
-
-
-def random_value(unit: Unit) -> float:
-    value = 1
-    if unit is Unit.PERCENTAGE:
-        value = random()
-    elif unit is Unit.MULTIPLICATIVE:
-        value = uniform(0, 1000)
-    elif unit is Unit.CURRENCY:
-        value = uniform(0, 999_999_999_999)
-    elif unit is Unit.UNKNOWN:
-        value = randrange(999_999_999_999)
-    return value
+    for name in FINANCIALS:
+        create_financials(financial_report=financials_report, name=name, value=uniform(0, 999_999_999_999))

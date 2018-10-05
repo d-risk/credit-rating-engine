@@ -1,7 +1,6 @@
 import csv
 from datetime import datetime
 
-from credit_report.models import Unit
 from common.management.commands._company import create_company
 from common.management.commands._creditreport import create_financial_report, create_financials
 
@@ -51,7 +50,6 @@ def parse(file_name: str) -> None:
                         create_financials(
                             financial_report=financial_report,
                             name=name,
-                            unit=Unit.CURRENCY,
                             value=value,
                         )
             else:

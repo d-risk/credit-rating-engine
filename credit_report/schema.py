@@ -1,19 +1,31 @@
 import graphene
+from django_filters import FilterSet
+from graphene.relay import Node
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 
-import credit_report.models
+import credit_report
+from credit_report.models import CreditReport, FinancialReport
 
 
 # Annex G - Credit Report Service
 # GraphQL data model
-class CreditReport(DjangoObjectType):
+class CreditReportFilter(FilterSet):
     class Meta:
-        model = credit_report.models.CreditReport
+        model = CreditReport
+        fields = ['company_id', 'financial_reports__report_date', ]
 
 
-class FinancialReport(DjangoObjectType):
+class CreditReportNode(DjangoObjectType):
     class Meta:
-        model = credit_report.models.FinancialReport
+        model = CreditReport
+        interfaces = (Node,)
+
+
+class FinancialReportNode(DjangoObjectType):
+    class Meta:
+        model = FinancialReport
+        interfaces = (Node,)
 
 
 class Financials(DjangoObjectType):
@@ -21,13 +33,5 @@ class Financials(DjangoObjectType):
         model = credit_report.models.Financials
 
 
-class RiskDriver(DjangoObjectType):
-    class Meta:
-        model = credit_report.models.RiskDriver
-
-
 class CreditReportQuery(graphene.ObjectType):
-    credit_reports = graphene.List(CreditReport, company_id=graphene.UUID())
-
-    def resolve_credit_reports(self, info, company_id):
-        return credit_report.models.CreditReport.objects.filter(company_id=company_id)
+    credit_reports = DjangoFilterConnectionField(CreditReportNode, filterset_class=CreditReportFilter)
