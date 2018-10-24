@@ -7,7 +7,7 @@ graphene-django==2.2.0
 graphql-core==2.1
 graphql-relay==0.4.5
 promise==2.1
-pytz==2018.5
+pytz==2018.6
 Rx==1.6.1
 singledispatch==3.4.0.3
 six==1.11.0
