@@ -1,4 +1,4 @@
-aniso8601==4.1.0
+aniso8601==5.1.0
 Django==2.1.7
 django-countries==5.3.3
 django-filter==2.1.0
